@@ -1,0 +1,141 @@
+import { Participant, Gender } from '@/types/participant';
+
+const STORAGE_KEY = 'hackathon_participants_data';
+const TEAMS_STORAGE_KEY = 'hackathon_teams_data';
+
+/**
+ * Charge la liste des participants depuis le localStorage de manière sécurisée (compatible SSR).
+ */
+export function loadParticipants(): Participant[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    return [];
+  } catch (error) {
+    console.error('Erreur lors du chargement des participants :', error);
+    return [];
+  }
+}
+
+/**
+ * Sauvegarde la liste des participants dans le localStorage.
+ */
+export function saveParticipants(participants: Participant[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde des participants :', error);
+  }
+}
+
+/**
+ * Sauvegarde les équipes générées dans le localStorage.
+ */
+export function saveTeams(teamsData: unknown): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(TEAMS_STORAGE_KEY, JSON.stringify(teamsData));
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde des équipes :', error);
+  }
+}
+
+/**
+ * Charge les équipes précédemment générées.
+ */
+export function loadTeams<T>(): T | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(TEAMS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Exporte les participants au format JSON téléchargeable.
+ */
+export function exportToJSON(participants: Participant[]): void {
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(participants, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute('href', dataStr);
+  downloadAnchor.setAttribute('download', `participants_hackathon_${new Date().toISOString().slice(0, 10)}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+/**
+ * Exporte les participants au format CSV.
+ */
+export function exportToCSV(participants: Participant[]): void {
+  const headers = ['Nom', 'Commits', 'Sexe'];
+  const rows = participants.map((p) => [
+    `"${p.name.replace(/"/g, '""')}"`,
+    p.commits.toString(),
+    p.gender === 'male' ? 'Homme' : 'Femme',
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `participants_hackathon_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+/**
+ * Parse un fichier CSV de participants.
+ * Accepte les colonnes: Nom, Commits, Sexe (ou Gender).
+ */
+export function parseCSV(content: string): Participant[] {
+  const lines = content
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  if (lines.length <= 1) return [];
+
+  // Vérifier si la première ligne est un header
+  const firstLine = lines[0].toLowerCase();
+  const hasHeader = firstLine.includes('nom') || firstLine.includes('name');
+  const dataLines = hasHeader ? lines.slice(1) : lines;
+
+  const result: Participant[] = [];
+
+  for (let i = 0; i < dataLines.length; i++) {
+    const rawCols = dataLines[i].split(/[,;\t]/);
+    if (rawCols.length < 2) continue;
+
+    const name = rawCols[0].replace(/^["']|["']$/g, '').trim();
+    const commits = parseInt(rawCols[1].replace(/[^0-9]/g, ''), 10) || 0;
+    const rawGender = (rawCols[2] || '').toLowerCase().trim();
+
+    let gender: Gender = 'male';
+    if (rawGender.includes('f') || rawGender.includes('femme') || rawGender.includes('woman')) {
+      gender = 'female';
+    }
+
+    if (name) {
+      result.push({
+        id: `imported-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 6)}`,
+        name,
+        commits,
+        gender,
+        createdAt: Date.now() + i,
+      });
+    }
+  }
+
+  return result;
+}
