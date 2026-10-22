@@ -82,9 +82,20 @@ export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
       const res = await fetch(`/api/github/october-commits?username=${encodeURIComponent(cleanUser)}`);
       if (res.ok) {
         const data = await res.json();
+
+        // Si l'utilisateur n'existe pas sur GitHub
+        if (data.userExists === false) {
+          setErrorMsg(data.message || `Le profil GitHub "@${cleanUser}" est introuvable.`);
+          setCommitBadgeInfo(null);
+          setCommits(0);
+          setAvatarUrl(undefined);
+          return;
+        }
+
         if (typeof data.commits === 'number') {
           setCommits(data.commits);
           setCommitBadgeInfo(`🗓️ ${data.commits} commit${data.commits > 1 ? 's' : ''} en octobre ${data.year}`);
+          setErrorMsg(null);
         }
         if (data.name && (!name || name === cleanUser)) {
           setName(data.name);
@@ -130,7 +141,9 @@ export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
       commits: commitVal,
       gender,
       githubHandle: trimmedGithub || undefined,
-      avatarUrl: avatarUrl || (trimmedGithub ? `https://github.com/${trimmedGithub}.png` : undefined),
+      avatarUrl: errorMsg
+        ? undefined
+        : avatarUrl || (trimmedGithub ? `https://github.com/${trimmedGithub}.png` : undefined),
     });
 
     if (keepOpen) {
@@ -257,6 +270,12 @@ export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
                 onSelectUser={handleSelectGitHubUser}
                 onSubmit={() => handleSubmit(false)}
                 onOpenStateChange={setIsAutocompleteOpen}
+                onBlur={() => {
+                  const trimmed = githubHandle.trim().replace(/^@/, '');
+                  if (trimmed && !loadingCommits && !avatarUrl) {
+                    fetchOctoberCommits(trimmed);
+                  }
+                }}
                 placeholder="Tapez un pseudo (ex: torvalds, alexmartin...)"
                 autoFocus={true}
               />
@@ -275,6 +294,7 @@ export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
                     src={avatarUrl}
                     alt="Avatar"
                     className="w-9 h-9 rounded-full border border-zinc-700 object-cover bg-zinc-800 shrink-0"
+                    onError={() => setAvatarUrl(undefined)}
                   />
                 )}
                 <input

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Participant, Gender } from '@/types/participant';
 import { GenderSwitch } from './GenderSwitch';
+import { ParticipantAvatar } from './ParticipantAvatar';
 import {
   Trash2,
   GitCommit,
@@ -174,24 +175,11 @@ export function ParticipantTable({
                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
                       <div className="shrink-0">{getRankBadge(rank)}</div>
 
-                      {participant.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={participant.avatarUrl}
-                          alt={participant.name}
-                          className="w-9 h-9 rounded-full border border-zinc-700 bg-zinc-800 object-cover shrink-0"
-                        />
-                      ) : (
-                        <div
-                          className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs border shrink-0 ${
-                            participant.gender === 'female'
-                              ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
-                              : 'bg-blue-500/15 border-blue-500/30 text-blue-300'
-                          }`}
-                        >
-                          {participant.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      <ParticipantAvatar
+                        avatarUrl={participant.avatarUrl}
+                        name={participant.name}
+                        gender={participant.gender}
+                      />
 
                       <div className="min-w-0 flex-1">
                         {isEditing ? (
@@ -343,24 +331,11 @@ export function ParticipantTable({
                           />
                         ) : (
                           <div className="flex items-center gap-3">
-                            {participant.avatarUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={participant.avatarUrl}
-                                alt={participant.name}
-                                className="w-9 h-9 rounded-full border border-zinc-700 bg-zinc-800 object-cover shrink-0"
-                              />
-                            ) : (
-                              <div
-                                className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs border shrink-0 ${
-                                  participant.gender === 'female'
-                                    ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
-                                    : 'bg-blue-500/15 border-blue-500/30 text-blue-300'
-                                }`}
-                              >
-                                {participant.name.charAt(0).toUpperCase()}
-                              </div>
-                            )}
+                            <ParticipantAvatar
+                              avatarUrl={participant.avatarUrl}
+                              name={participant.name}
+                              gender={participant.gender}
+                            />
                             <div>
                               <div className="font-medium text-zinc-100 flex items-center gap-2">
                                 <span>{participant.name}</span>

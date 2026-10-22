@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { BalancingResult } from '@/types/participant';
+import { ParticipantAvatar } from './ParticipantAvatar';
 import {
   Users,
   GitCommit,
@@ -203,24 +204,13 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
                       className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/60 text-xs gap-2"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        {member.avatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={member.avatarUrl}
-                            alt={member.name}
-                            className="w-7 h-7 rounded-full border border-zinc-700 bg-zinc-800 object-cover shrink-0"
-                          />
-                        ) : (
-                          <span
-                            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border shrink-0 ${
-                              member.gender === 'female'
-                                ? 'bg-rose-500/15 border-rose-500/30 text-rose-400'
-                                : 'bg-blue-500/15 border-blue-500/30 text-blue-400'
-                            }`}
-                          >
-                            {member.gender === 'female' ? '♀' : '♂'}
-                          </span>
-                        )}
+                        <ParticipantAvatar
+                          avatarUrl={member.avatarUrl}
+                          name={member.name}
+                          gender={member.gender}
+                          size="sm"
+                          showGenderSymbol={true}
+                        />
 
                         <div className="truncate flex-1">
                           <span className="font-semibold text-zinc-100 block truncate">

@@ -17,6 +17,7 @@ interface GitHubAutocompleteProps {
   onOpenStateChange?: (isOpen: boolean) => void;
   placeholder?: string;
   autoFocus?: boolean;
+  onBlur?: () => void;
 }
 
 export function GitHubAutocomplete({
@@ -27,6 +28,7 @@ export function GitHubAutocomplete({
   onOpenStateChange,
   placeholder = 'ex: torvalds, alexmartin...',
   autoFocus = false,
+  onBlur,
 }: GitHubAutocompleteProps) {
   const [suggestions, setSuggestions] = useState<GitHubUserSummary[]>([]);
   const [loading, setLoading] = useState(false);
@@ -157,6 +159,7 @@ export function GitHubAutocomplete({
           onFocus={() => {
             if (suggestions.length > 0) updateIsOpen(true);
           }}
+          onBlur={onBlur}
           placeholder={placeholder}
           aria-label="Pseudo GitHub"
           className="w-full pl-9 pr-9 py-2.5 sm:py-2.5 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 focus:border-blue-500 rounded-xl text-zinc-100 placeholder:text-zinc-500 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all font-mono"
