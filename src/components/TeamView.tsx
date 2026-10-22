@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BalancingResult, Team } from '@/types/participant';
+import { BalancingResult } from '@/types/participant';
 import {
   Users,
   GitCommit,
@@ -9,11 +9,10 @@ import {
   Copy,
   Check,
   Download,
-  Flame,
-  Award,
   Sparkles,
   BarChart3,
   ShieldCheck,
+  ExternalLink,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -48,7 +47,8 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
       md += `### ${t.name} (Moyenne : ${t.averageCommits} commits, Total : ${t.totalCommits} commits)\n`;
       t.members.forEach((m) => {
         const icon = m.gender === 'female' ? '👩' : '👨';
-        md += `- ${icon} **${m.name}** : ${m.commits} commits\n`;
+        const handle = m.githubHandle ? ` (@${m.githubHandle})` : '';
+        md += `- ${icon} **${m.name}**${handle} : ${m.commits} commits\n`;
       });
       md += `\n`;
     });
@@ -62,47 +62,47 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      {/* En-tête de section Équipes */}
-      <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-zinc-950 to-purple-950/30 border border-blue-500/20 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="space-y-1 text-center md:text-left">
+      {/* En-tête de section Équipes (Responsive) */}
+      <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-950/40 via-zinc-950 to-indigo-950/40 border border-blue-500/20 shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+        <div className="space-y-1.5 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Équipes Équilibrées Générées</span>
           </div>
-          <h2 className="text-xl font-bold text-zinc-100">
+          <h2 className="text-lg sm:text-xl font-bold text-zinc-100">
             {teams.length} Équipes créées pour {stats.totalParticipants} participants
           </h2>
-          <p className="text-xs text-zinc-300">
-            Association optimisée de profils forts, intermédiaires et débutants avec mixité de genre
+          <p className="text-xs text-zinc-400">
+            Association optimisée de profils forts, moyens et débutants avec mixité de genre
           </p>
         </div>
 
-        {/* Boutons d'export et régénération */}
-        <div className="flex items-center flex-wrap gap-2.5">
+        {/* Boutons d'export et régénération (adaptés mobile) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full lg:w-auto">
           <button
             type="button"
             onClick={onRegenerate}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-zinc-200 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl transition-all hover:scale-105 active:scale-95"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-zinc-200 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 rounded-xl transition-all active:scale-95 shadow-sm"
             title="Recalculer une variante équilibrée"
           >
-            <Shuffle className="w-3.5 h-3.5 text-blue-400" />
+            <Shuffle className="w-4 h-4 text-blue-400" />
             <span>Mélanger à nouveau</span>
           </button>
 
           <button
             type="button"
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:scale-105 active:scale-95"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-all shadow-lg shadow-blue-600/25 active:scale-95"
           >
             {copied ? (
               <>
                 <Check className="w-4 h-4 text-emerald-300" />
-                <span>Copié dans le presse-papier !</span>
+                <span>Copié !</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>Copier la liste (Markdown)</span>
+                <span>Copier Markdown</span>
               </>
             )}
           </button>
@@ -110,48 +110,48 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
           <button
             type="button"
             onClick={onExportCSV}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-zinc-300 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl transition-all"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-zinc-300 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 rounded-xl transition-all active:scale-95"
             title="Exporter la composition au format CSV"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>CSV</span>
+            <Download className="w-4 h-4" />
+            <span>Export CSV</span>
           </button>
         </div>
       </div>
 
       {/* Résumé des indicateurs statistiques de qualité de l'équilibrage */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 flex items-center gap-3">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
             <BarChart3 className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-[10px] text-zinc-300 block uppercase font-medium">Écart-type des commits</span>
-            <span className="text-sm font-bold font-mono text-zinc-100">
+            <span className="text-[10px] sm:text-[11px] text-zinc-400 block uppercase font-medium">Écart-type commits</span>
+            <span className="text-sm sm:text-base font-bold font-mono text-zinc-100">
               ±{stats.standardDeviation} commits
             </span>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 flex items-center gap-3">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shrink-0">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-[10px] text-zinc-300 block uppercase font-medium">Équipes mixtes H/F</span>
-            <span className="text-sm font-bold font-mono text-zinc-100">
+            <span className="text-[10px] sm:text-[11px] text-zinc-400 block uppercase font-medium">Équipes mixtes H/F</span>
+            <span className="text-sm sm:text-base font-bold font-mono text-zinc-100">
               {stats.mixedTeamsPercentage}% des équipes
             </span>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 flex items-center gap-3">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
             <Users className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-[10px] text-zinc-300 block uppercase font-medium">Moyenne globale par équipe</span>
-            <span className="text-sm font-bold font-mono text-zinc-100">
+            <span className="text-[10px] sm:text-[11px] text-zinc-400 block uppercase font-medium">Moyenne par équipe</span>
+            <span className="text-sm sm:text-base font-bold font-mono text-zinc-100">
               {stats.meanTeamCommits} commits
             </span>
           </div>
@@ -166,28 +166,28 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
           return (
             <div
               key={team.id}
-              className="group relative flex flex-col justify-between p-5 rounded-2xl bg-zinc-950 border border-zinc-800/80 hover:border-blue-500/40 transition-all hover:shadow-xl hover:shadow-blue-950/10"
+              className="group relative flex flex-col justify-between p-5 rounded-2xl sm:rounded-3xl bg-zinc-950 border border-zinc-800/80 hover:border-blue-500/40 transition-all hover:shadow-xl hover:shadow-blue-950/10"
             >
               <div className="space-y-4">
                 {/* En-tête de carte */}
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-zinc-100 text-sm flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 inline-flex items-center justify-center text-xs font-mono">
+                    <h3 className="font-semibold text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 inline-flex items-center justify-center text-xs font-mono font-bold">
                         {idx + 1}
                       </span>
                       <span>{team.name}</span>
                     </h3>
-                    <span className="text-[11px] text-zinc-300">
+                    <span className="text-xs text-zinc-400">
                       {team.members.length} membres
                     </span>
                   </div>
 
                   {/* Badge de parité */}
                   <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${
                       isMixed
-                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                        ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
                         : 'bg-zinc-800 text-zinc-400 border-zinc-700'
                     }`}
                   >
@@ -197,27 +197,44 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
 
                 {/* Liste des membres */}
                 <div className="space-y-2 pt-1">
-                  {team.members.map((member, mIdx) => (
+                  {team.members.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/60 text-xs"
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/60 text-xs gap-2"
                     >
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border ${
-                            member.gender === 'female'
-                              ? 'bg-rose-500/15 border-rose-500/30 text-rose-400'
-                              : 'bg-blue-500/15 border-blue-500/30 text-blue-400'
-                          }`}
-                        >
-                          {member.gender === 'female' ? '♀' : '♂'}
-                        </span>
-                        <span className="font-medium text-zinc-200">
-                          {member.name}
-                        </span>
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        {member.avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={member.avatarUrl}
+                            alt={member.name}
+                            className="w-7 h-7 rounded-full border border-zinc-700 bg-zinc-800 object-cover shrink-0"
+                          />
+                        ) : (
+                          <span
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border shrink-0 ${
+                              member.gender === 'female'
+                                ? 'bg-rose-500/15 border-rose-500/30 text-rose-400'
+                                : 'bg-blue-500/15 border-blue-500/30 text-blue-400'
+                            }`}
+                          >
+                            {member.gender === 'female' ? '♀' : '♂'}
+                          </span>
+                        )}
+
+                        <div className="truncate flex-1">
+                          <span className="font-semibold text-zinc-100 block truncate">
+                            {member.name}
+                          </span>
+                          {member.githubHandle && (
+                            <span className="text-[10px] font-mono text-zinc-400 block truncate">
+                              @{member.githubHandle}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-1 font-mono text-[11px] text-zinc-300">
+                      <div className="flex items-center gap-1 font-mono text-xs text-zinc-200 shrink-0 bg-zinc-950 px-2 py-1 rounded-lg border border-zinc-800">
                         <GitCommit className="w-3 h-3 text-emerald-400" />
                         <span>{member.commits}</span>
                       </div>
@@ -227,12 +244,12 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
               </div>
 
               {/* Pied de carte avec total et moyenne */}
-              <div className="mt-5 pt-3 border-t border-zinc-800/70 flex items-center justify-between text-xs font-mono">
-                <span className="text-zinc-300">
+              <div className="mt-5 pt-3.5 border-t border-zinc-800/70 flex items-center justify-between text-xs font-mono">
+                <span className="text-zinc-400">
                   Total : <strong className="text-zinc-200">{team.totalCommits}</strong>
                 </span>
-                <span className="text-zinc-300">
-                  Moyenne : <strong className="text-emerald-400">{team.averageCommits}</strong>
+                <span className="text-zinc-400">
+                  Moyenne : <strong className="text-emerald-400 font-bold">{team.averageCommits}</strong>
                 </span>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { Participant } from '@/types/participant';
 import { exportToCSV, exportToJSON, parseCSV } from '@/lib/storage';
-import { X, Download, Upload, FileText, Database, Sparkles, AlertCircle, Check } from 'lucide-react';
+import { X, Download, Upload, Database, Sparkles, AlertCircle, Check } from 'lucide-react';
 
 interface ImportExportModalProps {
   isOpen: boolean;
@@ -85,7 +85,7 @@ export function ImportExportModal({
           onClose();
         }, 1500);
       } catch (err) {
-        setError("Erreur lors de la lecture du fichier. Vérifiez le format.");
+        setError('Erreur lors de la lecture du fichier. Vérifiez le format.');
       }
     };
 
@@ -107,14 +107,14 @@ export function ImportExportModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md bg-zinc-950 border border-zinc-800/80 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="w-full max-w-md bg-zinc-950 border border-zinc-800/80 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col">
         {/* En-tête */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800/70 bg-zinc-900/40">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800/70 bg-zinc-900/40 shrink-0">
           <div className="flex items-center gap-2.5">
             <Database className="w-4 h-4 text-blue-400" />
             <h2 className="text-sm font-semibold text-zinc-100">
@@ -123,7 +123,8 @@ export function ImportExportModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-200 rounded-lg hover:bg-zinc-800"
+            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-zinc-200 rounded-xl hover:bg-zinc-800 transition-colors"
+            aria-label="Fermer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -131,19 +132,19 @@ export function ImportExportModal({
 
         {/* Feedback */}
         {error && (
-          <div className="mx-5 mt-4 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="mx-5 mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
         )}
         {success && (
-          <div className="mx-5 mt-4 p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
-            <Check className="w-4 h-4 shrink-0" />
+          <div className="mx-5 mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2">
+            <Check className="w-4 h-4 shrink-0 text-emerald-400" />
             <span>{success}</span>
           </div>
         )}
 
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 overflow-y-auto flex-1">
           {/* Exporter */}
           <div className="space-y-2">
             <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">
@@ -154,7 +155,7 @@ export function ImportExportModal({
                 type="button"
                 onClick={() => exportToCSV(participants)}
                 disabled={participants.length === 0}
-                className="flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Format CSV</span>
@@ -163,7 +164,7 @@ export function ImportExportModal({
                 type="button"
                 onClick={() => exportToJSON(participants)}
                 disabled={participants.length === 0}
-                className="flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
               >
                 <Download className="w-3.5 h-3.5 text-blue-400" />
                 <span>Format JSON</span>
@@ -185,12 +186,12 @@ export function ImportExportModal({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-dashed border-zinc-700 hover:border-blue-500 text-xs font-medium text-zinc-200 transition-all"
+              className="min-h-[46px] w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-dashed border-zinc-700 hover:border-blue-500 text-xs font-medium text-zinc-200 transition-all active:scale-95"
             >
               <Upload className="w-4 h-4 text-blue-400" />
               <span>Choisir un fichier CSV ou JSON...</span>
             </button>
-            <p className="text-[11px] text-zinc-300 text-center">
+            <p className="text-[11px] text-zinc-400 text-center">
               Format CSV accepté : <code>Nom,Commits,Sexe</code>
             </p>
           </div>
@@ -200,10 +201,10 @@ export function ImportExportModal({
             <button
               type="button"
               onClick={handleLoadDemo}
-              className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 hover:border-blue-500/40 text-xs font-medium text-blue-300 transition-all hover:scale-[1.01]"
+              className="min-h-[44px] w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gradient-to-r from-blue-600/15 to-purple-600/15 border border-blue-500/25 hover:border-blue-500/40 text-xs font-semibold text-blue-300 transition-all active:scale-95"
             >
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>Charger 18 participants d'exemple (Démo)</span>
+              <Sparkles className="w-4 h-4 text-blue-400" />
+              <span>Charger 18 participants d&apos;exemple (Démo)</span>
             </button>
           </div>
         </div>

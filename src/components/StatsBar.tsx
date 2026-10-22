@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Participant } from '@/types/participant';
-import { Users, GitCommit, Calculator, UserCheck } from 'lucide-react';
+import { Users, GitCommit, Calculator } from 'lucide-react';
 
 interface StatsBarProps {
   participants: Participant[];
@@ -19,52 +19,64 @@ export function StatsBar({ participants }: StatsBarProps) {
   const malePercentage = total > 0 ? Math.round((maleCount / total) * 100) : 50;
   const femalePercentage = total > 0 ? 100 - malePercentage : 50;
 
-  // Calcul estimation équipes de 3
-  const potentialTeams = Math.floor(total / 3);
-  const remainder = total % 3;
-
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
       {/* Total Participants */}
-      <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 shadow-sm flex items-center gap-3.5">
-        <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-          <Users className="w-5 h-5" />
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800/80 shadow-sm flex items-center gap-3 hover:border-zinc-700/80 transition-all">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
+          <Users className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <div>
-          <span className="text-[11px] font-medium text-zinc-300 block">Participants</span>
-          <span className="text-xl font-bold font-mono text-zinc-100">{total}</span>
+        <div className="min-w-0">
+          <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wider block truncate">
+            Participants
+          </span>
+          <span className="text-lg sm:text-xl font-bold font-mono text-zinc-100">
+            {total}
+          </span>
         </div>
       </div>
 
       {/* Total Commits */}
-      <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 shadow-sm flex items-center gap-3.5">
-        <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-          <GitCommit className="w-5 h-5" />
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800/80 shadow-sm flex items-center gap-3 hover:border-zinc-700/80 transition-all">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
+          <GitCommit className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <div>
-          <span className="text-[11px] font-medium text-zinc-300 block">Commits Totaux</span>
-          <span className="text-xl font-bold font-mono text-zinc-100">
+        <div className="min-w-0">
+          <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wider block truncate">
+            Commits Octobre
+          </span>
+          <span className="text-lg sm:text-xl font-bold font-mono text-zinc-100">
             {totalCommits.toLocaleString()}
           </span>
         </div>
       </div>
 
       {/* Moyenne commits */}
-      <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 shadow-sm flex items-center gap-3.5">
-        <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
-          <Calculator className="w-5 h-5" />
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800/80 shadow-sm flex items-center gap-3 hover:border-zinc-700/80 transition-all">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 shrink-0">
+          <Calculator className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <div>
-          <span className="text-[11px] font-medium text-zinc-300 block">Moyenne Commits</span>
-          <span className="text-xl font-bold font-mono text-zinc-100">{avgCommits}</span>
+        <div className="min-w-0">
+          <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wider block truncate">
+            Moyenne / pers.
+          </span>
+          <span className="text-lg sm:text-xl font-bold font-mono text-zinc-100">
+            {avgCommits}
+          </span>
         </div>
       </div>
 
       {/* Répartition de genre */}
-      <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 shadow-sm flex flex-col justify-center space-y-2">
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="text-blue-400 font-medium">♂ {maleCount} ({malePercentage}%)</span>
-          <span className="text-rose-400 font-medium">♀ {femaleCount} ({femalePercentage}%)</span>
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800/80 shadow-sm flex flex-col justify-center space-y-1.5 sm:space-y-2 col-span-2 lg:col-span-1 hover:border-zinc-700/80 transition-all">
+        <div className="flex items-center justify-between text-[11px] font-medium">
+          <span className="text-blue-400 flex items-center gap-1">
+            <span>♂ {maleCount}</span>
+            <span className="text-[10px] text-zinc-500">({malePercentage}%)</span>
+          </span>
+          <span className="text-rose-400 flex items-center gap-1">
+            <span>♀ {femaleCount}</span>
+            <span className="text-[10px] text-zinc-500">({femalePercentage}%)</span>
+          </span>
         </div>
         {/* Barre de proportion */}
         <div className="w-full h-2 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden flex">

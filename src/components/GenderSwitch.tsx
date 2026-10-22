@@ -12,21 +12,29 @@ interface GenderSwitchProps {
 export function GenderSwitch({ value, onChange, size = 'md' }: GenderSwitchProps) {
   const isMale = value === 'male';
 
-  const containerPadding = size === 'sm' ? 'p-0.5 text-xs' : 'p-1 text-sm';
-  const buttonPadding = size === 'sm' ? 'px-2 py-0.5' : 'px-3 py-1.5';
+  const containerClass =
+    size === 'sm'
+      ? 'p-1 text-xs gap-1'
+      : 'p-1.5 text-xs sm:text-sm gap-1.5 w-full sm:w-auto';
+
+  const buttonClass =
+    size === 'sm'
+      ? 'min-h-[34px] px-2.5 py-1'
+      : 'min-h-[44px] flex-1 sm:flex-initial px-4 py-2';
 
   return (
     <div
       role="group"
       aria-label="Sélection du sexe"
-      className={`inline-flex items-center rounded-xl bg-zinc-900 border border-zinc-800 transition-all ${containerPadding}`}
+      className={`inline-flex items-center rounded-2xl bg-zinc-900/90 border border-zinc-800 transition-all ${containerClass}`}
     >
       <button
         type="button"
         onClick={() => onChange('male')}
-        className={`relative flex items-center gap-1.5 rounded-lg font-medium transition-all ${buttonPadding} ${
+        aria-pressed={isMale}
+        className={`relative flex items-center justify-center gap-1.5 rounded-xl font-semibold transition-all ${buttonClass} ${
           isMale
-            ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-sm'
+            ? 'bg-blue-600/25 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10'
             : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
         }`}
       >
@@ -37,9 +45,10 @@ export function GenderSwitch({ value, onChange, size = 'md' }: GenderSwitchProps
       <button
         type="button"
         onClick={() => onChange('female')}
-        className={`relative flex items-center gap-1.5 rounded-lg font-medium transition-all ${buttonPadding} ${
+        aria-pressed={!isMale}
+        className={`relative flex items-center justify-center gap-1.5 rounded-xl font-semibold transition-all ${buttonClass} ${
           !isMale
-            ? 'bg-rose-600/20 text-rose-400 border border-rose-500/30 shadow-sm'
+            ? 'bg-rose-600/25 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10'
             : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
         }`}
       >
