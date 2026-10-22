@@ -15,7 +15,13 @@ interface CachedCommits {
 }
 
 const commitCache = new Map<string, CachedCommits>();
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes en mémoire serveur
+
+const CACHE_HEADERS = {
+  'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400',
+  'CDN-Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+  'Vercel-CDN-Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -32,7 +38,7 @@ export async function GET(request: NextRequest) {
   const cacheKey = `${username.toLowerCase()}-${year}`;
   const cached = commitCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-    return NextResponse.json({ ...cached.data, cached: true });
+    return NextResponse.json({ ...cached.data, cached: true }, { headers: CACHE_HEADERS });
   }
 
   try {
@@ -45,16 +51,19 @@ export async function GET(request: NextRequest) {
       headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
     }
 
-    // 1. Vérifier en premier lieu si l'utilisateur existe réellement sur GitHub
-    const userProfileRes = await fetch(
-      `https://api.github.com/users/${encodeURIComponent(username)}`,
-      {
-        headers,
-        next: { revalidate: 120 },
-      }
-    );
+    const dateRange = `${year}-10-01..${year}-10-31`;
+    const searchUrl = `https://api.github.com/search/commits?q=author:${encodeURIComponent(
+      username
+    )}+author-date:${dateRange}`;
+    const userUrl = `https://api.github.com/users/${encodeURIComponent(username)}`;
 
-    // Si l'utilisateur n'existe pas sur GitHub (404)
+    // Requêtes parallèles simultanées : divise par 2 le temps d'attente réseau vers GitHub
+    const [userProfileRes, commitsRes] = await Promise.all([
+      fetch(userUrl, { headers, next: { revalidate: 180 } }),
+      fetch(searchUrl, { headers, next: { revalidate: 180 } }),
+    ]);
+
+    // 1. Profil introuvable (404)
     if (userProfileRes.status === 404) {
       const notFoundPayload = {
         username,
@@ -67,10 +76,10 @@ export async function GET(request: NextRequest) {
         message: `Le profil GitHub "@${username}" est introuvable.`,
       };
       commitCache.set(cacheKey, { timestamp: Date.now(), data: notFoundPayload });
-      return NextResponse.json(notFoundPayload);
+      return NextResponse.json(notFoundPayload, { headers: CACHE_HEADERS });
     }
 
-    // Gestion du rate limiting sur le profil
+    // Rate limit éventuel
     if (userProfileRes.status === 403 || userProfileRes.status === 429) {
       return NextResponse.json(
         {
@@ -88,17 +97,6 @@ export async function GET(request: NextRequest) {
     const canonicalLogin: string = userData.login || username;
     const displayName: string | null = userData.name || userData.login || null;
     const avatarUrl: string = userData.avatar_url || `https://github.com/${canonicalLogin}.png`;
-
-    // 2. Récupérer les commits d'octobre du profil identifié
-    const dateRange = `${year}-10-01..${year}-10-31`;
-    const searchUrl = `https://api.github.com/search/commits?q=author:${encodeURIComponent(
-      canonicalLogin
-    )}+author-date:${dateRange}`;
-
-    const commitsRes = await fetch(searchUrl, {
-      headers,
-      next: { revalidate: 60 },
-    });
 
     if (commitsRes.status === 403 || commitsRes.status === 429) {
       return NextResponse.json(
@@ -137,7 +135,6 @@ export async function GET(request: NextRequest) {
               item.commit.author.name.toLowerCase().includes(canonicalLogin.toLowerCase()))
         );
 
-        // Si aucun commit parmi les résultats ne correspond à l'auteur, c'est un faux positif de GitHub !
         if (!hasMatchingAuthor) {
           commitsCount = 0;
         } else {
@@ -160,7 +157,7 @@ export async function GET(request: NextRequest) {
 
     commitCache.set(cacheKey, { timestamp: Date.now(), data: payload });
 
-    return NextResponse.json(payload);
+    return NextResponse.json(payload, { headers: CACHE_HEADERS });
   } catch (error) {
     console.error('Erreur lors du calcul des commits d\'octobre :', error);
     return NextResponse.json(

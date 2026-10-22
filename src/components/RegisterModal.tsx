@@ -24,6 +24,9 @@ interface RegisterModalProps {
   onAdd: (participant: Omit<Participant, 'id' | 'createdAt'>) => void;
 }
 
+// Cache mémoire côté client pour les calculs de commits (0ms en rappel ou préchargement)
+const clientCommitsCache = new Map<string, any>();
+
 export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
   const [githubHandle, setGithubHandle] = useState('');
   const [name, setName] = useState('');
@@ -70,10 +73,41 @@ export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
 
   if (!isOpen) return null;
 
-  // Récupération des commits d'octobre
+  // Récupération des commits d'octobre (avec cache mémoire client 0ms)
+  const applyCommitData = (data: any, cleanUser: string) => {
+    // Si l'utilisateur n'existe pas sur GitHub
+    if (data.userExists === false) {
+      setErrorMsg(data.message || `Le profil GitHub "@${cleanUser}" est introuvable.`);
+      setCommitBadgeInfo(null);
+      setCommits(0);
+      setAvatarUrl(undefined);
+      return;
+    }
+
+    if (typeof data.commits === 'number') {
+      setCommits(data.commits);
+      setCommitBadgeInfo(`🗓️ ${data.commits} commit${data.commits > 1 ? 's' : ''} en octobre ${data.year}`);
+      setErrorMsg(null);
+    }
+    if (data.name && (!name || name === cleanUser)) {
+      setName(data.name);
+    } else if (!name) {
+      setName(cleanUser);
+    }
+    if (data.avatar_url) {
+      setAvatarUrl(data.avatar_url);
+    }
+  };
+
   const fetchOctoberCommits = async (username: string) => {
     const cleanUser = username.trim().replace(/^@/, '');
     if (!cleanUser) return;
+
+    const cacheKey = cleanUser.toLowerCase();
+    if (clientCommitsCache.has(cacheKey)) {
+      applyCommitData(clientCommitsCache.get(cacheKey), cleanUser);
+      return;
+    }
 
     setLoadingCommits(true);
     setCommitBadgeInfo(null);
@@ -82,29 +116,8 @@ export function RegisterModal({ isOpen, onClose, onAdd }: RegisterModalProps) {
       const res = await fetch(`/api/github/october-commits?username=${encodeURIComponent(cleanUser)}`);
       if (res.ok) {
         const data = await res.json();
-
-        // Si l'utilisateur n'existe pas sur GitHub
-        if (data.userExists === false) {
-          setErrorMsg(data.message || `Le profil GitHub "@${cleanUser}" est introuvable.`);
-          setCommitBadgeInfo(null);
-          setCommits(0);
-          setAvatarUrl(undefined);
-          return;
-        }
-
-        if (typeof data.commits === 'number') {
-          setCommits(data.commits);
-          setCommitBadgeInfo(`🗓️ ${data.commits} commit${data.commits > 1 ? 's' : ''} en octobre ${data.year}`);
-          setErrorMsg(null);
-        }
-        if (data.name && (!name || name === cleanUser)) {
-          setName(data.name);
-        } else if (!name) {
-          setName(cleanUser);
-        }
-        if (data.avatar_url) {
-          setAvatarUrl(data.avatar_url);
-        }
+        clientCommitsCache.set(cacheKey, data);
+        applyCommitData(data, cleanUser);
       }
     } catch (err) {
       console.error('Erreur récupération commits octobre :', err);
