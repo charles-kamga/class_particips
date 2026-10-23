@@ -169,7 +169,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#0B1713] text-[#F3F4F6] flex flex-col font-sans selection:bg-[#E6392F]/30 selection:text-white overflow-x-hidden">
       {/* Navigation supérieure */}
-      <header className="sticky top-0 z-30 border-b border-[#224438] bg-[#0B1713]/90 backdrop-blur-xl">
+      <header
+        id="app-header"
+        data-section="navbar"
+        className="sticky top-0 z-30 border-b border-[#224438] bg-[#0B1713]/90 backdrop-blur-xl"
+      >
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2.5">
           {/* Logo & Titre Modulis */}
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -195,17 +199,19 @@ export default function Home() {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
+              id="btn-import-export-modal"
               onClick={() => setIsImportExportOpen(true)}
               className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-colors"
               title="Importer ou exporter les participants (CSV/JSON)"
             >
               <Database className="w-4 h-4 text-[#00B4D8]" />
-              <span className="hidden sm:inline">Exporter les données</span>
+              <span className="hidden sm:inline">Données</span>
             </button>
 
             {participants.length > 0 && (
               <button
                 type="button"
+                id="btn-clear-all-participants"
                 onClick={handleClearAll}
                 className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
                 title="Vider la liste des participants"
@@ -216,6 +222,7 @@ export default function Home() {
 
             <button
               type="button"
+              id="btn-open-register-modal"
               onClick={() => setIsRegisterOpen(true)}
               className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
             >
@@ -230,15 +237,23 @@ export default function Home() {
       </header>
 
       {/* Contenu principal */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
-        {/* Hero Banner officiel de l'événement avec compte à rebours */}
-        <EventHeaderBanner />
+      <main id="main-content" data-section="main-content" className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Section 1 : Hero Banner officiel de l'événement avec compte à rebours */}
+        <section id="section-hero-countdown" data-section="hero-banner">
+          <EventHeaderBanner />
+        </section>
 
-        {/* Statistiques clés */}
-        <StatsBar participants={participants} />
+        {/* Section 2 : Statistiques globales */}
+        <section id="section-stats-overview" data-section="stats-overview">
+          <StatsBar participants={participants} />
+        </section>
 
-        {/* Section Génération d'équipes */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        {/* Section 3 : Générateur d'équipes */}
+        <section
+          id="section-team-generator"
+          data-section="team-generator-cta"
+          className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4"
+        >
           <div className="space-y-1 text-center sm:text-left">
             <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 justify-center sm:justify-start">
               <Users className="w-4 h-4 text-[#00B4D8]" />
@@ -251,6 +266,7 @@ export default function Home() {
 
           <button
             type="button"
+            id="btn-generate-teams"
             onClick={handleGenerateTeams}
             disabled={participants.length < 3}
             className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
@@ -258,19 +274,21 @@ export default function Home() {
             <Sparkles className="w-4 h-4 text-white" />
             <span>Générer les équipes de 3</span>
           </button>
-        </div>
+        </section>
 
-        {/* Vue des équipes générées */}
+        {/* Section 4 : Vue des équipes générées */}
         {balancingResult && (
-          <TeamView
-            result={balancingResult}
-            onRegenerate={handleGenerateTeams}
-            onExportCSV={handleExportTeamsCSV}
-          />
+          <section id="section-teams-results" data-section="teams-view">
+            <TeamView
+              result={balancingResult}
+              onRegenerate={handleGenerateTeams}
+              onExportCSV={handleExportTeamsCSV}
+            />
+          </section>
         )}
 
-        {/* Tableau interactif des participants */}
-        <div className="space-y-3">
+        {/* Section 5 : Tableau interactif des participants */}
+        <section id="section-participants-table" data-section="participants-table" className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-400">
               Participants & Classement Commits Octobre
@@ -283,7 +301,7 @@ export default function Home() {
             onDelete={handleDeleteParticipant}
             onOpenAddModal={() => setIsRegisterOpen(true)}
           />
-        </div>
+        </section>
       </main>
 
       {/* Footer officiel de l'événement avec sponsors et coordonnées */}

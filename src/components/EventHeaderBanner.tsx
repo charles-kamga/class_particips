@@ -32,7 +32,11 @@ export function EventHeaderBanner() {
   const formattedDays = daysLeft < 10 ? `0${daysLeft}` : `${daysLeft}`;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-2xl transition-all">
+    <div
+      id="event-banner-card"
+      data-component="event-header-banner"
+      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-2xl transition-all"
+    >
       {/* Ruban Pixel Staircase supérieur */}
       <PixelStaircaseRibbon position="top" className="opacity-80" />
 
@@ -44,9 +48,9 @@ export function EventHeaderBanner() {
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
           
           {/* Bloc Marque & Titre de l'événement */}
-          <div className="flex-1 space-y-3.5">
+          <div id="banner-brand-info" data-element="brand-info" className="flex-1 space-y-3.5">
             {/* Logo Modulis */}
-            <div className="flex items-center gap-2.5">
+            <div id="banner-modulis-logo" className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-[#00B4D8]/15 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-black text-sm tracking-tighter shadow-sm">
                 M
               </div>
@@ -61,7 +65,7 @@ export function EventHeaderBanner() {
             </div>
 
             {/* Titre Principal */}
-            <div>
+            <div id="banner-event-title">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#E6392F]/15 border border-[#E6392F]/30 text-[#F27A82] text-[11px] font-bold uppercase tracking-wider mb-1.5">
                 <Sparkles className="w-3 h-3 text-[#F4A91E]" />
                 <span>AI + HACKFEST</span>
@@ -78,7 +82,7 @@ export function EventHeaderBanner() {
             </div>
 
             {/* Badges Pratiques (Date, Heure, Lieu) */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-zinc-300">
+            <div id="banner-practical-details" className="flex flex-wrap items-center gap-2 pt-1 text-xs text-zinc-300">
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#162E26] border border-[#224438]">
                 <Calendar className="w-3.5 h-3.5 text-[#F4A91E]" />
                 <span className="font-medium text-white">Samedi 31 Octobre</span>
@@ -98,14 +102,14 @@ export function EventHeaderBanner() {
           </div>
 
           {/* Note Pinned Hack Day Count Down */}
-          <div className="flex flex-col items-center justify-center shrink-0">
+          <div id="banner-countdown-widget" data-element="countdown-widget" className="flex flex-col items-center justify-center shrink-0">
             {/* Badge Titre "Hack day count down" */}
-            <div className="px-3 py-1 rounded-full bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
+            <div id="countdown-badge-title" className="px-3 py-1 rounded-full bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
               Hack day count down
             </div>
 
             {/* Papier Post-It blanc avec punaise dorée */}
-            <div className="relative bg-white text-[#11231D] rounded-xl sm:rounded-2xl p-4 sm:p-5 w-44 sm:w-48 text-center pinned-card-shadow transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+            <div id="pinned-postit-note" data-element="pinned-postit" className="relative bg-white text-[#11231D] rounded-xl sm:rounded-2xl p-4 sm:p-5 w-44 sm:w-48 text-center pinned-card-shadow transform -rotate-1 hover:rotate-0 transition-transform duration-300">
               {/* Punaise dorée 📌 */}
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 flex items-center justify-center drop-shadow-md z-30">
                 <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#D98200] via-[#F4A91E] to-[#FFF0A0] shadow-md border border-[#9A5B00] relative">
@@ -114,7 +118,7 @@ export function EventHeaderBanner() {
               </div>
 
               {/* Chiffre Pixel Art Rouge */}
-              <div className="pt-2 font-mono font-black text-4xl sm:text-5xl text-[#E6392F] tracking-tighter leading-none select-none">
+              <div id="countdown-pixel-days" className="pt-2 font-mono font-black text-4xl sm:text-5xl text-[#E6392F] tracking-tighter leading-none select-none">
                 {formattedDays}
               </div>
 

@@ -61,9 +61,9 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div id="teams-view-container" data-component="team-view" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* En-tête de section Équipes */}
-      <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#10231D] via-[#162E26] to-[#10231D] border border-[#224438] shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+      <div id="teams-summary-header" data-element="teams-header" className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#10231D] via-[#162E26] to-[#10231D] border border-[#224438] shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
         <div className="space-y-1.5 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00B4D8]/15 border border-[#00B4D8]/30 text-[#00B4D8] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export function TeamView({ result, onRegenerate, onExportCSV }: TeamViewProps) {
       </div>
 
       {/* Bento Grid des Équipes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div id="teams-bento-grid" data-element="bento-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {teams.map((team, idx) => {
           const isMixed = team.maleCount > 0 && team.femaleCount > 0;
 

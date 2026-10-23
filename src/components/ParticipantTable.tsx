@@ -102,13 +102,22 @@ export function ParticipantTable({
   };
 
   return (
-    <div className="bg-[#11231D] border border-[#224438] rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl shadow-black/40">
+    <div
+      id="participants-table-card"
+      data-component="participant-table"
+      className="bg-[#11231D] border border-[#224438] rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl shadow-black/40"
+    >
       {/* Barre d'outils du tableau */}
-      <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-b border-[#224438] bg-[#0D1B17]">
+      <div
+        id="participants-search-bar"
+        data-element="search-toolbar"
+        className="p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-b border-[#224438] bg-[#0D1B17]"
+      >
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
+            id="input-search-participants"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher par nom ou pseudo..."
@@ -160,7 +169,7 @@ export function ParticipantTable({
       ) : (
         <>
           {/* VUE MOBILE (Cartes Bento adaptatives, écran < 768px) */}
-          <div className="md:hidden divide-y divide-[#1C3B31]">
+          <div id="participants-mobile-view" data-view="mobile-cards" className="md:hidden divide-y divide-[#1C3B31]">
             {filtered.map((participant) => {
               const rank = sortedParticipants.findIndex((p) => p.id === participant.id) + 1;
               const isEditing = editingId === participant.id;
@@ -293,8 +302,8 @@ export function ParticipantTable({
           </div>
 
           {/* VUE TABLETTE & DESKTOP (Tableau complet, écran >= 768px) */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div id="participants-desktop-view" data-view="desktop-table" className="hidden md:block overflow-x-auto">
+            <table id="table-participants-ranking" className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#224438] bg-[#0D1B17] text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                   <th className="py-3.5 px-4 w-20 text-center">Rang</th>

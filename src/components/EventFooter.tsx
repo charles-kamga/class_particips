@@ -13,13 +13,17 @@ export function EventFooter() {
   ];
 
   return (
-    <footer className="mt-12 border-t border-[#224438] bg-[#0B1713] relative overflow-hidden">
+    <footer
+      id="event-sponsors-footer"
+      data-section="sponsors-footer"
+      className="mt-12 border-t border-[#224438] bg-[#0B1713] relative overflow-hidden"
+    >
       {/* Ruban Pixel Staircase inversé */}
       <PixelStaircaseRibbon position="bottom" className="opacity-70 mb-6" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 space-y-8">
         {/* Section Partenaires & Sponsors */}
-        <div className="space-y-3">
+        <div id="sponsors-section" data-element="sponsors-list" className="space-y-3">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               Nos Partenaires & Sponsors
@@ -27,7 +31,7 @@ export function EventFooter() {
             <div className="h-px flex-1 bg-[#224438]" />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div id="sponsors-grid" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {sponsors.map((sponsor) => (
               <div
                 key={sponsor.name}
