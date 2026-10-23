@@ -34,7 +34,7 @@ export function ParticipantAvatar({
       <img
         src={avatarUrl}
         alt={name}
-        className={`${sizeClasses} rounded-full border border-zinc-700 bg-zinc-800 object-cover shrink-0 ${className}`}
+        className={`${sizeClasses} rounded-full border border-[#224438] bg-[#162E26] object-cover shrink-0 ${className}`}
         onError={() => setImageFailed(true)}
       />
     );
@@ -47,8 +47,8 @@ export function ParticipantAvatar({
     <div
       className={`${sizeClasses} rounded-full flex items-center justify-center font-bold border shrink-0 ${
         isFemale
-          ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
-          : 'bg-blue-500/15 border-blue-500/30 text-blue-300'
+          ? 'bg-[#F27A82]/20 border-[#F27A82]/40 text-[#FF9EAA]'
+          : 'bg-[#4D7ECE]/20 border-[#4D7ECE]/40 text-[#73A1F4]'
       } ${className}`}
       aria-label={`${name} (${gender})`}
     >

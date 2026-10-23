@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0B1713;
+  --foreground: #F3F4F6;
+  --hack-forest-bg: #0B1713;
+  --hack-surface-1: #10231D;
+  --hack-surface-2: #162E26;
+  --hack-surface-border: #224438;
+  --hack-red: #E6392F;
+  --hack-gold: #F4A91E;
+  --hack-pink: #F27A82;
+  --hack-blue: #4D7ECE;
+  --hack-cyan: #00B4D8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-hack-forest-bg: var(--hack-forest-bg);
+  --color-hack-surface-1: var(--hack-surface-1);
+  --color-hack-surface-2: var(--hack-surface-2);
+  --color-hack-border: var(--hack-surface-border);
+  --color-hack-red: var(--hack-red);
+  --color-hack-gold: var(--hack-gold);
+  --color-hack-pink: var(--hack-pink);
+  --color-hack-blue: var(--hack-blue);
+  --color-hack-cyan: var(--hack-cyan);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0B1713;
+  color: #F3F4F6;
+  font-family: var(--font-sans);
+  background-image: 
+    radial-gradient(ellipse at 15% 0%, rgba(0, 180, 216, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 10%, rgba(244, 169, 30, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(230, 57, 47, 0.06) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Texture calendrier subtile */
+.bg-calendar-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* Ombre rétro et aspect note épinglée */
+.pinned-card-shadow {
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+/* Effet pixel rétro pour badges et chiffres */
+.pixel-corners {
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
 }

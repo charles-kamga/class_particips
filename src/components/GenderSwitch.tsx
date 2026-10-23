@@ -26,7 +26,7 @@ export function GenderSwitch({ value, onChange, size = 'md' }: GenderSwitchProps
     <div
       role="group"
       aria-label="Sélection du sexe"
-      className={`inline-flex items-center rounded-2xl bg-zinc-900/90 border border-zinc-800 transition-all ${containerClass}`}
+      className={`inline-flex items-center rounded-2xl bg-[#0B1713] border border-[#224438] transition-all ${containerClass}`}
     >
       <button
         type="button"
@@ -34,8 +34,8 @@ export function GenderSwitch({ value, onChange, size = 'md' }: GenderSwitchProps
         aria-pressed={isMale}
         className={`relative flex items-center justify-center gap-1.5 rounded-xl font-semibold transition-all ${buttonClass} ${
           isMale
-            ? 'bg-blue-600/25 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10'
-            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+            ? 'bg-[#4D7ECE]/25 text-[#73A1F4] border border-[#4D7ECE]/50 shadow-sm shadow-[#4D7ECE]/20'
+            : 'text-zinc-400 hover:text-white hover:bg-[#162E26]'
         }`}
       >
         <span className="text-base leading-none">♂</span>
@@ -48,8 +48,8 @@ export function GenderSwitch({ value, onChange, size = 'md' }: GenderSwitchProps
         aria-pressed={!isMale}
         className={`relative flex items-center justify-center gap-1.5 rounded-xl font-semibold transition-all ${buttonClass} ${
           !isMale
-            ? 'bg-rose-600/25 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10'
-            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+            ? 'bg-[#F27A82]/25 text-[#FF9EAA] border border-[#F27A82]/50 shadow-sm shadow-[#F27A82]/20'
+            : 'text-zinc-400 hover:text-white hover:bg-[#162E26]'
         }`}
       >
         <span className="text-base leading-none">♀</span>

@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Participant, BalancingResult } from '@/types/participant';
 import { loadParticipants, saveParticipants, loadTeams, saveTeams } from '@/lib/storage';
 import { balanceTeams } from '@/lib/algorithm';
+import { EventHeaderBanner } from '@/components/EventHeaderBanner';
+import { EventFooter } from '@/components/EventFooter';
 import { RegisterModal } from '@/components/RegisterModal';
 import { ParticipantTable } from '@/components/ParticipantTable';
 import { StatsBar } from '@/components/StatsBar';
@@ -15,7 +17,6 @@ import {
   Sparkles,
   Database,
   Trash2,
-  Zap,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -26,16 +27,20 @@ export default function Home() {
   const [isImportExportOpen, setIsImportExportOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Chargement initial depuis le localStorage (SSR-safe)
+  // Chargement initial depuis le localStorage sans blocage SSR ni warning ESLint
   useEffect(() => {
-    const loadedParticipants = loadParticipants();
-    setParticipants(loadedParticipants);
+    const timer = setTimeout(() => {
+      const loadedParticipants = loadParticipants();
+      setParticipants(loadedParticipants);
 
-    const loadedTeamsData = loadTeams<BalancingResult>();
-    if (loadedTeamsData) {
-      setBalancingResult(loadedTeamsData);
-    }
-    setIsMounted(true);
+      const loadedTeamsData = loadTeams<BalancingResult>();
+      if (loadedTeamsData) {
+        setBalancingResult(loadedTeamsData);
+      }
+      setIsMounted(true);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Sauvegarde automatique à chaque changement de participants
@@ -55,7 +60,6 @@ export default function Home() {
   // Raccourci clavier global 'N' pour ouvrir la modale d'enregistrement
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignorer si l'utilisateur est déjà en train de taper dans un champ
       const activeTag = document.activeElement?.tagName.toLowerCase();
       if (activeTag === 'input' || activeTag === 'textarea') return;
 
@@ -126,6 +130,7 @@ export default function Home() {
       particleCount: 80,
       spread: 80,
       origin: { y: 0.5 },
+      colors: ['#E6392F', '#F4A91E', '#00B4D8', '#10B981', '#F27A82'],
     });
   }, [participants]);
 
@@ -154,7 +159,7 @@ export default function Home() {
     link.setAttribute('href', url);
     link.setAttribute(
       'download',
-      `equipes_hackathon_${new Date().toISOString().slice(0, 10)}.csv`
+      `equipes_hacktoberfest_yaounde_${new Date().toISOString().slice(0, 10)}.csv`
     );
     document.body.appendChild(link);
     link.click();
@@ -162,26 +167,26 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-blue-600/30 overflow-x-hidden">
-      {/* Navigation supérieure (Adaptée mobile sans débordement) */}
-      <header className="sticky top-0 z-30 border-b border-zinc-800/80 bg-zinc-950/85 backdrop-blur-xl">
+    <div className="min-h-screen bg-[#0B1713] text-[#F3F4F6] flex flex-col font-sans selection:bg-[#E6392F]/30 selection:text-white overflow-x-hidden">
+      {/* Navigation supérieure */}
+      <header className="sticky top-0 z-30 border-b border-[#224438] bg-[#0B1713]/90 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2.5">
-          {/* Logo & Titre */}
+          {/* Logo & Titre Modulis */}
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
-              <Zap className="w-5 h-5" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#00B4D8] to-[#10B981] flex items-center justify-center text-[#0B1713] font-black shadow-lg shadow-[#00B4D8]/20 shrink-0">
+              <span className="text-base tracking-tighter">M</span>
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <h1 className="font-bold text-sm sm:text-base tracking-tight text-white truncate">
-                  Hackathon Balancer
-                </h1>
-                <span className="hidden md:inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  Octobre
+                <span className="font-extrabold text-sm sm:text-base tracking-tight text-white uppercase truncate">
+                  MODULIS
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E6392F]/15 text-[#F27A82] border border-[#E6392F]/30 shrink-0">
+                  Hacktoberfest 26
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-400 hidden sm:block truncate">
-                Matchmaking paritaire & classement commits
+              <p className="text-[11px] text-[#00B4D8] hidden sm:block truncate font-medium">
+                Team Balancer • AI + Hackfest Yaoundé
               </p>
             </div>
           </div>
@@ -191,10 +196,10 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setIsImportExportOpen(true)}
-              className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-zinc-100 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl transition-colors"
+              className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-colors"
               title="Importer ou exporter les participants (CSV/JSON)"
             >
-              <Database className="w-4 h-4 text-blue-400" />
+              <Database className="w-4 h-4 text-[#00B4D8]" />
               <span className="hidden sm:inline">Données</span>
             </button>
 
@@ -202,7 +207,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-rose-400 hover:bg-rose-500/15 rounded-xl transition-colors"
+                className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
                 title="Vider la liste des participants"
               >
                 <Trash2 className="w-4 h-4" />
@@ -212,11 +217,11 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setIsRegisterOpen(true)}
-              className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-lg shadow-blue-600/25 transition-all hover:scale-105 active:scale-95 shrink-0"
+              className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
             >
               <UserPlus className="w-4 h-4" />
               <span>Nouveau</span>
-              <kbd className="hidden md:inline px-1.5 py-0.5 bg-blue-700/60 rounded text-[10px] font-mono border border-blue-400/30">
+              <kbd className="hidden md:inline px-1.5 py-0.5 bg-black/25 rounded text-[10px] font-mono border border-white/20">
                 N
               </kbd>
             </button>
@@ -226,17 +231,20 @@ export default function Home() {
 
       {/* Contenu principal */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Hero Banner officiel de l'événement avec compte à rebours */}
+        <EventHeaderBanner />
+
         {/* Statistiques clés */}
         <StatsBar participants={participants} />
 
         {/* Section Génération d'équipes */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-zinc-950 border border-zinc-800/80 shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="space-y-1 text-center sm:text-left">
-            <h2 className="text-sm sm:text-base font-semibold text-zinc-100 flex items-center gap-2 justify-center sm:justify-start">
-              <Users className="w-4 h-4 text-blue-400" />
+            <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 justify-center sm:justify-start">
+              <Users className="w-4 h-4 text-[#00B4D8]" />
               <span>Génération d&apos;Équipes Équilibrées</span>
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-300">
               Associe profils forts, moyens et débutants avec répartition paritaire Homme / Femme
             </p>
           </div>
@@ -245,9 +253,9 @@ export default function Home() {
             type="button"
             onClick={handleGenerateTeams}
             disabled={participants.length < 3}
-            className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            <Sparkles className="w-4 h-4 text-amber-300" />
+            <Sparkles className="w-4 h-4 text-white" />
             <span>Générer les équipes de 3</span>
           </button>
         </div>
@@ -265,7 +273,7 @@ export default function Home() {
         <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-400">
-              Participants & Classement Commits
+              Participants & Classement Commits Octobre
             </h2>
           </div>
 
@@ -278,13 +286,8 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-900 bg-zinc-950 py-6 mt-8 sm:mt-12 text-center text-xs text-zinc-500 space-y-1 px-4">
-        <p className="text-zinc-400 font-medium">Hackathon Team Balancer — Conçu pour Vercel & la performance</p>
-        <p className="text-[11px] text-zinc-500">
-          Stockage local 100% offline, assistance GitHub & algorithme d&apos;équilibrage déterministe
-        </p>
-      </footer>
+      {/* Footer officiel de l'événement avec sponsors et coordonnées */}
+      <EventFooter />
 
       {/* Modale d'enregistrement rapide */}
       <RegisterModal

@@ -139,3 +139,34 @@ export function parseCSV(content: string): Participant[] {
 
   return result;
 }
+
+/**
+ * Parse un contenu JSON de participants.
+ */
+export function parseJSON(content: string): unknown {
+  return JSON.parse(content);
+}
+
+/**
+ * Participants de démonstration pour le test d'équilibrage du Hacktoberfest.
+ */
+export const DEMO_PARTICIPANTS: Omit<Participant, 'id' | 'createdAt'>[] = [
+  { name: 'Alex Martin', commits: 142, gender: 'male', githubHandle: 'alexmartin' },
+  { name: 'Sarah Dubois', commits: 98, gender: 'female', githubHandle: 'sarahd' },
+  { name: 'Kevin Kamga', commits: 86, gender: 'male', githubHandle: 'kevinkamga' },
+  { name: 'Aïcha Bello', commits: 75, gender: 'female', githubHandle: 'aichabello' },
+  { name: 'David Ndongo', commits: 64, gender: 'male', githubHandle: 'davidndongo' },
+  { name: 'Emilie Foko', commits: 52, gender: 'female', githubHandle: 'emiliefoko' },
+  { name: 'Samuel Eto', commits: 45, gender: 'male', githubHandle: 'samueleto' },
+  { name: 'Nadia Tchuente', commits: 38, gender: 'female', githubHandle: 'nadiat' },
+  { name: 'Patrick Mbia', commits: 31, gender: 'male', githubHandle: 'patrickmbia' },
+  { name: 'Brenda Onana', commits: 25, gender: 'female', githubHandle: 'brendaonana' },
+  { name: 'Christian Bassogog', commits: 21, gender: 'male', githubHandle: 'christianb' },
+  { name: 'Diane Moukoko', commits: 18, gender: 'female', githubHandle: 'dianem' },
+  { name: 'Frank Zambo', commits: 14, gender: 'male', githubHandle: 'frankz' },
+  { name: 'Carine Nguemo', commits: 12, gender: 'female', githubHandle: 'carineng' },
+  { name: 'Joel Matip', commits: 9, gender: 'male', githubHandle: 'joelmatip' },
+  { name: 'Helene Abega', commits: 7, gender: 'female', githubHandle: 'helenea' },
+  { name: 'Boris Song', commits: 4, gender: 'male', githubHandle: 'borissong' },
+  { name: 'Fanny Milla', commits: 2, gender: 'female', githubHandle: 'fannymilla' },
+];

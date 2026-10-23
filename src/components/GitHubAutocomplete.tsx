@@ -1,34 +1,33 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AtSign, Loader2, Sparkles } from 'lucide-react';
 
 export interface GitHubUserSummary {
   login: string;
   avatar_url: string;
-  html_url: string;
 }
 
 interface GitHubAutocompleteProps {
   value: string;
-  onChange: (val: string) => void;
+  onChange: (value: string) => void;
   onSelectUser: (user: GitHubUserSummary) => void;
   onSubmit?: () => void;
   onOpenStateChange?: (isOpen: boolean) => void;
+  onBlur?: () => void;
   placeholder?: string;
   autoFocus?: boolean;
-  onBlur?: () => void;
 }
 
-// Cache mémoire côté client pour éliminer toute latence lors de la saisie/effacement
+// Cache local en mémoire (0ms de latence pour les recherches déjà faites)
 const clientSearchCache = new Map<string, GitHubUserSummary[]>();
 
-// Fonction de pré-chargement spéculatif silencieux des commits d'octobre
-function prefetchOctoberCommits(login: string) {
-  if (!login || typeof window === 'undefined') return;
-  fetch(`/api/github/october-commits?username=${encodeURIComponent(login)}`, {
-    priority: 'low',
-  }).catch(() => {});
+// Pré-chargement silencieux des commits d'octobre
+function prefetchOctoberCommits(username: string) {
+  if (!username) return;
+  const clean = username.trim().replace(/^@/, '');
+  if (!clean) return;
+  fetch(`/api/github/october-commits?username=${encodeURIComponent(clean)}`).catch(() => {});
 }
 
 export function GitHubAutocomplete({
@@ -37,48 +36,51 @@ export function GitHubAutocomplete({
   onSelectUser,
   onSubmit,
   onOpenStateChange,
-  placeholder = 'ex: torvalds, alexmartin...',
-  autoFocus = false,
   onBlur,
+  placeholder = 'Rechercher un pseudo...',
+  autoFocus = false,
 }: GitHubAutocompleteProps) {
   const [suggestions, setSuggestions] = useState<GitHubUserSummary[]>([]);
-  const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [rateLimited, setRateLimited] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const updateIsOpen = (open: boolean) => {
-    setIsOpen(open);
-    onOpenStateChange?.(open);
-  };
+  const updateIsOpen = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      onOpenStateChange?.(open);
+    },
+    [onOpenStateChange]
+  );
 
-  // Recherche optimisée : Cache instantané (0ms) + Debounce réduit à 140ms
+  // Recherche optimisée avec Debounce (140ms) & Cache 0ms
   useEffect(() => {
-    const trimmed = value.trim().replace(/^@/, '');
-    if (trimmed.length < 2) {
-      setSuggestions([]);
-      updateIsOpen(false);
-      setSelectedIndex(-1);
-      return;
-    }
-
-    const cacheKey = trimmed.toLowerCase();
-    if (clientSearchCache.has(cacheKey)) {
-      const cachedUsers = clientSearchCache.get(cacheKey)!;
-      setSuggestions(cachedUsers);
-      updateIsOpen(cachedUsers.length > 0);
-      setSelectedIndex(-1);
-      setLoading(false);
-      if (cachedUsers.length > 0) {
-        prefetchOctoberCommits(cachedUsers[0].login);
-      }
-      return;
-    }
-
     const timer = setTimeout(async () => {
+      const trimmed = value.trim().replace(/^@/, '');
+      if (trimmed.length < 2) {
+        setSuggestions([]);
+        updateIsOpen(false);
+        setSelectedIndex(-1);
+        return;
+      }
+
+      const cacheKey = trimmed.toLowerCase();
+      if (clientSearchCache.has(cacheKey)) {
+        const cachedUsers = clientSearchCache.get(cacheKey)!;
+        setSuggestions(cachedUsers);
+        updateIsOpen(cachedUsers.length > 0);
+        setSelectedIndex(-1);
+        setLoading(false);
+        if (cachedUsers.length > 0) {
+          prefetchOctoberCommits(cachedUsers[0].login);
+        }
+        return;
+      }
+
       setLoading(true);
       try {
         const res = await fetch(`/api/github/search-users?q=${encodeURIComponent(trimmed)}`);
@@ -96,7 +98,6 @@ export function GitHubAutocomplete({
             updateIsOpen(users.length > 0);
             setSelectedIndex(-1);
 
-            // Pré-chargement anticipé du 1er résultat (95% des sélections)
             if (users.length > 0) {
               prefetchOctoberCommits(users[0].login);
             }
@@ -110,7 +111,7 @@ export function GitHubAutocomplete({
     }, 140);
 
     return () => clearTimeout(timer);
-  }, [value]);
+  }, [value, updateIsOpen]);
 
   // Fermeture lors d'un clic extérieur
   useEffect(() => {
@@ -121,7 +122,7 @@ export function GitHubAutocomplete({
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [updateIsOpen]);
 
   const handleSelect = (user: GitHubUserSummary) => {
     onChange(user.login);
@@ -164,7 +165,6 @@ export function GitHubAutocomplete({
       }
     }
 
-    // Soumission directe par Entrée si pas de suggestions ouvertes
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       onSubmit?.();
@@ -176,7 +176,7 @@ export function GitHubAutocomplete({
       <div className="relative flex items-center">
         <span className="absolute left-3 text-zinc-400 flex items-center pointer-events-none">
           {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+            <Loader2 className="w-4 h-4 animate-spin text-[#00B4D8]" />
           ) : (
             <AtSign className="w-4 h-4 text-zinc-400" />
           )}
@@ -195,7 +195,7 @@ export function GitHubAutocomplete({
           onBlur={onBlur}
           placeholder={placeholder}
           aria-label="Pseudo GitHub"
-          className="w-full pl-9 pr-9 py-2.5 sm:py-2.5 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 focus:border-blue-500 rounded-xl text-zinc-100 placeholder:text-zinc-500 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all font-mono"
+          className="w-full pl-9 pr-9 py-2.5 bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] focus:border-[#00B4D8] rounded-xl text-white placeholder:text-zinc-500 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00B4D8]/20 transition-all font-mono"
         />
 
         {value && (
@@ -207,7 +207,7 @@ export function GitHubAutocomplete({
               updateIsOpen(false);
               inputRef.current?.focus();
             }}
-            className="absolute right-2.5 p-1 text-zinc-400 hover:text-zinc-200 transition-colors rounded-md"
+            className="absolute right-2.5 p-1 text-zinc-400 hover:text-white transition-colors rounded-md"
             aria-label="Effacer le pseudo"
           >
             <span className="text-base leading-none">×</span>
@@ -215,18 +215,18 @@ export function GitHubAutocomplete({
         )}
       </div>
 
-      {/* Menu déroulant des suggestions (Accessible & Mobile Touch Friendly) */}
+      {/* Menu déroulant des suggestions */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-2xl shadow-black/90 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
-          <div className="px-3.5 py-2 bg-zinc-900/80 border-b border-zinc-800/60 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-[#11231D] backdrop-blur-xl border border-[#224438] rounded-2xl shadow-2xl shadow-black/90 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+          <div className="px-3.5 py-2 bg-[#0D1B17] border-b border-[#224438] text-[10px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
             <span>Profils GitHub suggérés</span>
-            <span className="text-[10px] text-blue-400 flex items-center gap-1">
-              <Sparkles className="w-3 h-3" />
+            <span className="text-[10px] text-[#00B4D8] flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-[#F4A91E]" />
               <span>Entrée pour choisir</span>
             </span>
           </div>
 
-          <ul className="max-h-60 overflow-y-auto divide-y divide-zinc-900/80">
+          <ul className="max-h-60 overflow-y-auto divide-y divide-[#1C3B31]">
             {suggestions.map((user, idx) => {
               const isSelected = selectedIndex === idx;
               return (
@@ -239,8 +239,8 @@ export function GitHubAutocomplete({
                     onClick={() => handleSelect(user)}
                     className={`w-full min-h-[46px] flex items-center justify-between px-3.5 py-2.5 text-left transition-all ${
                       isSelected
-                        ? 'bg-blue-600/20 text-blue-300 border-l-4 border-blue-500 pl-3'
-                        : 'hover:bg-zinc-900/70 text-zinc-200'
+                        ? 'bg-[#00B4D8]/20 text-[#00B4D8] border-l-4 border-[#00B4D8] pl-3'
+                        : 'hover:bg-[#162E26] text-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -248,10 +248,10 @@ export function GitHubAutocomplete({
                       <img
                         src={user.avatar_url}
                         alt={user.login}
-                        className="w-7 h-7 rounded-full border border-zinc-700 bg-zinc-800 object-cover shrink-0"
+                        className="w-7 h-7 rounded-full border border-[#224438] bg-[#162E26] object-cover shrink-0"
                       />
                       <div className="flex flex-col">
-                        <span className="font-semibold text-xs text-zinc-100 font-mono">
+                        <span className="font-semibold text-xs text-white font-mono">
                           @{user.login}
                         </span>
                       </div>
@@ -270,7 +270,7 @@ export function GitHubAutocomplete({
       )}
 
       {rateLimited && (
-        <p className="mt-1 text-[11px] text-amber-400/90 font-sans">
+        <p className="mt-1 text-[11px] text-[#F4A91E] font-sans">
           Quota GitHub temporairement restreint. Vous pouvez continuer la saisie manuelle.
         </p>
       )}

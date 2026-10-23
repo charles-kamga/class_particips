@@ -1,37 +1,24 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Participant } from '@/types/participant';
-import { exportToCSV, exportToJSON, parseCSV } from '@/lib/storage';
-import { X, Download, Upload, Database, Sparkles, AlertCircle, Check } from 'lucide-react';
+import { exportToCSV, exportToJSON, parseCSV, parseJSON, DEMO_PARTICIPANTS } from '@/lib/storage';
+import {
+  Download,
+  Upload,
+  Database,
+  X,
+  Check,
+  AlertCircle,
+  Sparkles,
+} from 'lucide-react';
 
 interface ImportExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   participants: Participant[];
-  onImport: (newParticipants: Participant[]) => void;
+  onImport: (participants: Participant[]) => void;
 }
-
-const DEMO_PARTICIPANTS: Omit<Participant, 'id' | 'createdAt'>[] = [
-  { name: 'Alexandre Dumas', commits: 145, gender: 'male' },
-  { name: 'Sarah Connor', commits: 138, gender: 'female' },
-  { name: 'Thomas Anderson', commits: 120, gender: 'male' },
-  { name: 'Ada Lovelace', commits: 115, gender: 'female' },
-  { name: 'Lucas Scott', commits: 98, gender: 'male' },
-  { name: 'Camille Claudel', commits: 92, gender: 'female' },
-  { name: 'David Bowie', commits: 84, gender: 'male' },
-  { name: 'Marie Curie', commits: 76, gender: 'female' },
-  { name: 'Antoine Saint-Exupéry', commits: 68, gender: 'male' },
-  { name: 'Emma Watson', commits: 62, gender: 'female' },
-  { name: 'Maxime Valette', commits: 54, gender: 'male' },
-  { name: 'Inès Reg', commits: 48, gender: 'female' },
-  { name: 'Julien Doré', commits: 39, gender: 'male' },
-  { name: 'Clara Luciani', commits: 31, gender: 'female' },
-  { name: 'Nicolas Dupont', commits: 24, gender: 'male' },
-  { name: 'Jade Foret', commits: 18, gender: 'female' },
-  { name: 'Paul Mirabel', commits: 12, gender: 'male' },
-  { name: 'Lucie Bernard', commits: 7, gender: 'female' },
-];
 
 export function ImportExportModal({
   isOpen,
@@ -54,19 +41,21 @@ export function ImportExportModal({
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        if (!text) return;
+      const text = event.target?.result as string;
+      if (!text) return;
 
+      try {
         let imported: Participant[] = [];
         if (file.name.endsWith('.json')) {
-          const parsed = JSON.parse(text);
-          if (Array.isArray(parsed)) {
-            imported = parsed.map((item, idx) => ({
+          const raw = parseJSON(text);
+          if (Array.isArray(raw)) {
+            imported = raw.map((item, idx) => ({
               id: item.id || `imported-${Date.now()}-${idx}`,
-              name: item.name || `Participant ${idx + 1}`,
-              commits: typeof item.commits === 'number' ? item.commits : 0,
+              name: String(item.name || 'Participant'),
+              commits: Number(item.commits) || 0,
               gender: item.gender === 'female' ? 'female' : 'male',
+              githubHandle: item.githubHandle,
+              avatarUrl: item.avatarUrl,
               createdAt: item.createdAt || Date.now() + idx,
             }));
           }
@@ -84,7 +73,7 @@ export function ImportExportModal({
         setTimeout(() => {
           onClose();
         }, 1500);
-      } catch (err) {
+      } catch {
         setError('Erreur lors de la lecture du fichier. Vérifiez le format.');
       }
     };
@@ -107,23 +96,23 @@ export function ImportExportModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md bg-zinc-950 border border-zinc-800/80 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col">
+      <div className="w-full max-w-md bg-[#11231D] border border-[#224438] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col">
         {/* En-tête */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800/70 bg-zinc-900/40 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#224438] bg-[#0D1B17] shrink-0">
           <div className="flex items-center gap-2.5">
-            <Database className="w-4 h-4 text-blue-400" />
-            <h2 className="text-sm font-semibold text-zinc-100">
+            <Database className="w-4 h-4 text-[#00B4D8]" />
+            <h2 className="text-sm font-bold text-white">
               Import & Export de Données
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-zinc-200 rounded-xl hover:bg-zinc-800 transition-colors"
+            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white rounded-xl hover:bg-[#162E26] transition-colors"
             aria-label="Fermer"
           >
             <X className="w-4 h-4" />
@@ -132,14 +121,14 @@ export function ImportExportModal({
 
         {/* Feedback */}
         {error && (
-          <div className="mx-5 mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className="mx-5 mt-4 p-3 rounded-xl bg-[#E6392F]/15 border border-[#E6392F]/30 text-[#F27A82] text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#E6392F]" />
             <span>{error}</span>
           </div>
         )}
         {success && (
-          <div className="mx-5 mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2">
-            <Check className="w-4 h-4 shrink-0 text-emerald-400" />
+          <div className="mx-5 mt-4 p-3 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981] text-xs flex items-center gap-2">
+            <Check className="w-4 h-4 shrink-0 text-[#10B981]" />
             <span>{success}</span>
           </div>
         )}
@@ -147,7 +136,7 @@ export function ImportExportModal({
         <div className="p-5 space-y-4 overflow-y-auto flex-1">
           {/* Exporter */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">
+            <span className="text-xs font-semibold text-zinc-200 uppercase tracking-wider block">
               Exporter les données
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -155,25 +144,25 @@ export function ImportExportModal({
                 type="button"
                 onClick={() => exportToCSV(participants)}
                 disabled={participants.length === 0}
-                className="min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+                className="min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] text-xs font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <Download className="w-3.5 h-3.5 text-[#10B981]" />
                 <span>Format CSV</span>
               </button>
               <button
                 type="button"
                 onClick={() => exportToJSON(participants)}
                 disabled={participants.length === 0}
-                className="min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+                className="min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] text-xs font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
               >
-                <Download className="w-3.5 h-3.5 text-blue-400" />
+                <Download className="w-3.5 h-3.5 text-[#00B4D8]" />
                 <span>Format JSON</span>
               </button>
             </div>
           </div>
 
-          <div className="border-t border-zinc-800/60 pt-4 space-y-2">
-            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">
+          <div className="border-t border-[#224438] pt-4 space-y-2">
+            <span className="text-xs font-semibold text-zinc-200 uppercase tracking-wider block">
               Importer depuis un fichier
             </span>
             <input
@@ -186,9 +175,9 @@ export function ImportExportModal({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="min-h-[46px] w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-dashed border-zinc-700 hover:border-blue-500 text-xs font-medium text-zinc-200 transition-all active:scale-95"
+              className="min-h-[46px] w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-[#162E26] hover:bg-[#1C3B31] border border-dashed border-[#224438] hover:border-[#00B4D8] text-xs font-medium text-white transition-all active:scale-95"
             >
-              <Upload className="w-4 h-4 text-blue-400" />
+              <Upload className="w-4 h-4 text-[#00B4D8]" />
               <span>Choisir un fichier CSV ou JSON...</span>
             </button>
             <p className="text-[11px] text-zinc-400 text-center">
@@ -197,13 +186,13 @@ export function ImportExportModal({
           </div>
 
           {/* Démo */}
-          <div className="border-t border-zinc-800/60 pt-4">
+          <div className="border-t border-[#224438] pt-4">
             <button
               type="button"
               onClick={handleLoadDemo}
-              className="min-h-[44px] w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gradient-to-r from-blue-600/15 to-purple-600/15 border border-blue-500/25 hover:border-blue-500/40 text-xs font-semibold text-blue-300 transition-all active:scale-95"
+              className="min-h-[44px] w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-[#00B4D8]/10 border border-[#00B4D8]/25 hover:border-[#00B4D8]/50 text-xs font-semibold text-[#00B4D8] transition-all active:scale-95"
             >
-              <Sparkles className="w-4 h-4 text-blue-400" />
+              <Sparkles className="w-4 h-4 text-[#F4A91E]" />
               <span>Charger 18 participants d&apos;exemple (Démo)</span>
             </button>
           </div>
