@@ -200,7 +200,7 @@ export default function Home() {
               title="Importer ou exporter les participants (CSV/JSON)"
             >
               <Database className="w-4 h-4 text-[#00B4D8]" />
-              <span className="hidden sm:inline">Données</span>
+              <span className="hidden sm:inline">Exporter les données</span>
             </button>
 
             {participants.length > 0 && (
