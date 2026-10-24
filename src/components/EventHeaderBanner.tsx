@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Sparkles } from 'lucide-react';
+import { Calendar, Clock, MapPin } from 'lucide-react';
 import { PixelStaircaseRibbon } from './PixelStaircaseRibbon';
 
 export function EventHeaderBanner() {
@@ -35,7 +35,7 @@ export function EventHeaderBanner() {
     <div
       id="event-banner-card"
       data-component="event-header-banner"
-      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-2xl transition-all"
+      className="relative overflow-hidden rounded-lg bg-[#11231D] border border-[#224438] shadow-2xl transition-all"
     >
       {/* Ruban Pixel Staircase supérieur */}
       <PixelStaircaseRibbon position="top" className="opacity-80" />
@@ -51,7 +51,7 @@ export function EventHeaderBanner() {
           <div id="banner-brand-info" data-element="brand-info" className="flex-1 space-y-3.5">
             {/* Logo Modulis */}
             <div id="banner-modulis-logo" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#00B4D8]/15 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-black text-sm tracking-tighter shadow-sm">
+              <div className="w-8 h-8 rounded-md bg-[#00B4D8]/15 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-black text-sm tracking-tighter shadow-sm">
                 M
               </div>
               <div>
@@ -64,15 +64,11 @@ export function EventHeaderBanner() {
               </div>
             </div>
 
-            {/* Titre Principal */}
+            {/* Titre Principal (sans le badge token AI + HACKFEST) */}
             <div id="banner-event-title">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#E6392F]/15 border border-[#E6392F]/30 text-[#F27A82] text-[11px] font-bold uppercase tracking-wider mb-1.5">
-                <Sparkles className="w-3 h-3 text-[#F4A91E]" />
-                <span>AI + HACKFEST</span>
-              </div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white uppercase leading-tight">
                 HACKTOBERFEST <span className="text-[#00B4D8]">YAOUNDÉ</span>{' '}
-                <span className="inline-block px-2 py-0.5 rounded bg-[#162E26] border border-[#224438] text-[#F4A91E] font-mono text-base sm:text-xl">
+                <span className="inline-block px-2 py-0.5 rounded-md bg-[#162E26] border border-[#224438] text-[#F4A91E] font-mono text-base sm:text-xl">
                   26
                 </span>
               </h1>
@@ -83,18 +79,18 @@ export function EventHeaderBanner() {
 
             {/* Badges Pratiques (Date, Heure, Lieu) */}
             <div id="banner-practical-details" className="flex flex-wrap items-center gap-2 pt-1 text-xs text-zinc-300">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#162E26] border border-[#224438]">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#162E26] border border-[#224438]">
                 <Calendar className="w-3.5 h-3.5 text-[#F4A91E]" />
                 <span className="font-medium text-white">Samedi 31 Octobre</span>
               </div>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#162E26] border border-[#224438]">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#162E26] border border-[#224438]">
                 <Clock className="w-3.5 h-3.5 text-[#00B4D8]" />
                 <span>10:00 - 16:00</span>
                 <span className="text-[10px] text-zinc-400 font-mono">(En présentiel)</span>
               </div>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#162E26] border border-[#224438]">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#162E26] border border-[#224438]">
                 <MapPin className="w-3.5 h-3.5 text-[#E6392F]" />
                 <span>Yaoundé, Centre</span>
               </div>
@@ -104,12 +100,12 @@ export function EventHeaderBanner() {
           {/* Note Pinned Hack Day Count Down */}
           <div id="banner-countdown-widget" data-element="countdown-widget" className="flex flex-col items-center justify-center shrink-0">
             {/* Badge Titre "Hack day count down" */}
-            <div id="countdown-badge-title" className="px-3 py-1 rounded-full bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
+            <div id="countdown-badge-title" className="px-3 py-1 rounded-md bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
               Hack day count down
             </div>
 
             {/* Papier Post-It blanc avec punaise dorée */}
-            <div id="pinned-postit-note" data-element="pinned-postit" className="relative bg-white text-[#11231D] rounded-xl sm:rounded-2xl p-4 sm:p-5 w-44 sm:w-48 text-center pinned-card-shadow transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+            <div id="pinned-postit-note" data-element="pinned-postit" className="relative bg-white text-[#11231D] rounded-lg p-4 sm:p-5 w-44 sm:w-48 text-center pinned-card-shadow transform -rotate-1 hover:rotate-0 transition-transform duration-300">
               {/* Punaise dorée 📌 */}
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 flex items-center justify-center drop-shadow-md z-30">
                 <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#D98200] via-[#F4A91E] to-[#FFF0A0] shadow-md border border-[#9A5B00] relative">

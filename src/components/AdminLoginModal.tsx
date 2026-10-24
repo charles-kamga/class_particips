@@ -104,7 +104,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
       }}
     >
       <div
-        className="w-full max-w-md bg-[#11231D] border border-[#224438] rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/95 overflow-hidden transition-all animate-in zoom-in-95 duration-200"
+        className="w-full max-w-md bg-[#11231D] border border-[#224438] rounded-lg shadow-2xl shadow-black/95 overflow-hidden transition-all animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="admin-modal-title"
@@ -112,7 +112,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
         {/* En-tête */}
         <div className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-[#224438] bg-[#0D1B17]">
           <div className="flex items-center gap-3">
-            <div className="p-2 sm:p-2.5 rounded-xl bg-[#F4A91E]/15 border border-[#F4A91E]/30 text-[#F4A91E]">
+            <div className="p-2 sm:p-2.5 rounded-md bg-[#F4A91E]/15 border border-[#F4A91E]/30 text-[#F4A91E]">
               <Lock className="w-5 h-5" />
             </div>
             <div>
@@ -128,7 +128,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
           <button
             type="button"
             onClick={handleModalClose}
-            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white rounded-xl hover:bg-[#162E26] transition-colors"
+            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white rounded-md hover:bg-[#162E26] transition-colors"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />
@@ -138,14 +138,14 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
         {/* Corps */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-[#E6392F]/15 border border-[#E6392F]/30 text-[#F27A82] text-xs flex items-center gap-2.5 animate-in fade-in">
+            <div className="p-3 rounded-md bg-[#E6392F]/15 border border-[#E6392F]/30 text-[#F27A82] text-xs flex items-center gap-2.5 animate-in fade-in">
               <AlertCircle className="w-4 h-4 shrink-0 text-[#E6392F]" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981] text-xs flex items-center gap-2.5 animate-in fade-in">
+            <div className="p-3 rounded-md bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981] text-xs flex items-center gap-2.5 animate-in fade-in">
               <Check className="w-4 h-4 shrink-0 text-[#10B981]" />
               <span>{successMsg}</span>
             </div>
@@ -168,7 +168,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
                 }}
                 disabled={isLoading}
                 placeholder="Entrez le mot de passe..."
-                className="w-full px-4 py-2.5 pr-11 bg-[#162E26] border border-[#224438] focus:border-[#F4A91E] rounded-xl text-white placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#F4A91E]/20 transition-all font-mono"
+                className="w-full px-4 py-2.5 pr-11 bg-[#162E26] border border-[#224438] focus:border-[#F4A91E] rounded-md text-white placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#F4A91E]/20 transition-all font-mono"
               />
 
               <button
@@ -190,7 +190,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
             <button
               type="button"
               onClick={handleModalClose}
-              className="px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-all"
+              className="px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-md transition-all"
             >
               Annuler
             </button>
@@ -198,7 +198,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
             <button
               type="submit"
               disabled={isLoading || !password.trim()}
-              className="min-h-[40px] inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#F4A91E] to-[#E6392F] hover:opacity-95 rounded-xl shadow-lg shadow-[#F4A91E]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+              className="min-h-[40px] inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#F4A91E] to-[#E6392F] hover:opacity-95 rounded-md shadow-lg shadow-[#F4A91E]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
             >
               {isLoading ? (
                 <>

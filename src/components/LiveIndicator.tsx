@@ -22,7 +22,7 @@ export function LiveIndicator({
     <div className="flex items-center gap-2">
       {/* Badge Temps Réel Live */}
       <div
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
           syncStatus === 'connected'
             ? 'bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30'
             : syncStatus === 'syncing'
@@ -70,13 +70,13 @@ export function LiveIndicator({
       {/* Rôle & Accès Organisateur */}
       {isAdmin ? (
         <div className="flex items-center gap-1.5">
-          <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#F4A91E]/15 text-[#F4A91E] border border-[#F4A91E]/30 text-[10px] font-bold uppercase tracking-wider">
+          <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#F4A91E]/15 text-[#F4A91E] border border-[#F4A91E]/30 text-[10px] font-bold uppercase tracking-wider">
             👑 Admin
           </span>
           <button
             type="button"
             onClick={onLogout}
-            className="min-h-[36px] inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-zinc-300 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-all"
+            className="min-h-[36px] inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-zinc-300 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-md transition-all"
             title="Quitter le mode Organisateur (repasser en spectateur)"
           >
             <Unlock className="w-3.5 h-3.5 text-[#10B981]" />
@@ -87,7 +87,7 @@ export function LiveIndicator({
         <button
           type="button"
           onClick={onOpenLogin}
-          className="min-h-[36px] inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs font-semibold text-zinc-300 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-all hover:border-[#F4A91E]/50"
+          className="min-h-[36px] inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs font-semibold text-zinc-300 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-md transition-all hover:border-[#F4A91E]/50"
           title="Se connecter en tant qu'organisateur"
         >
           <Lock className="w-3.5 h-3.5 text-[#F4A91E]" />

@@ -64,9 +64,9 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
   return (
     <div id="teams-view-container" data-component="team-view" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* En-tête de section Équipes */}
-      <div id="teams-summary-header" data-element="teams-header" className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#10231D] via-[#162E26] to-[#10231D] border border-[#224438] shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+      <div id="teams-summary-header" data-element="teams-header" className="p-5 sm:p-6 rounded-lg bg-gradient-to-r from-[#10231D] via-[#162E26] to-[#10231D] border border-[#224438] shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
         <div className="space-y-1.5 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00B4D8]/15 border border-[#00B4D8]/30 text-[#00B4D8] text-xs font-semibold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#00B4D8]/15 border border-[#00B4D8]/30 text-[#00B4D8] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Équipes Équilibrées Générées</span>
           </div>
@@ -84,7 +84,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
             <button
               type="button"
               onClick={onRegenerate}
-              className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-all active:scale-95 shadow-sm"
+              className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-md transition-all active:scale-95 shadow-sm"
               title="Recalculer une variante équilibrée"
             >
               <Shuffle className="w-4 h-4 text-[#00B4D8]" />
@@ -95,7 +95,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
           <button
             type="button"
             onClick={handleCopyMarkdown}
-            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-[#E6392F] hover:bg-[#d62f25] rounded-xl transition-all shadow-lg shadow-[#E6392F]/25 active:scale-95"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-[#E6392F] hover:bg-[#d62f25] rounded-md transition-all shadow-lg shadow-[#E6392F]/25 active:scale-95"
           >
             {copied ? (
               <>
@@ -113,7 +113,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
           <button
             type="button"
             onClick={onExportCSV}
-            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-zinc-200 bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-all active:scale-95"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-zinc-200 bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-md transition-all active:scale-95"
             title="Exporter la composition au format CSV"
           >
             <Download className="w-4 h-4" />
@@ -124,8 +124,8 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
 
       {/* Résumé des indicateurs statistiques de qualité de l'équilibrage */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-4 rounded-2xl bg-[#11231D] border border-[#224438] flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 shrink-0">
+        <div className="p-4 rounded-lg bg-[#11231D] border border-[#224438] flex items-center gap-3">
+          <div className="p-2.5 rounded-md bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 shrink-0">
             <BarChart3 className="w-4 h-4" />
           </div>
           <div>
@@ -136,8 +136,8 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-[#11231D] border border-[#224438] flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-[#F4A91E]/15 text-[#F4A91E] border border-[#F4A91E]/30 shrink-0">
+        <div className="p-4 rounded-lg bg-[#11231D] border border-[#224438] flex items-center gap-3">
+          <div className="p-2.5 rounded-md bg-[#F4A91E]/15 text-[#F4A91E] border border-[#F4A91E]/30 shrink-0">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
@@ -148,8 +148,8 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-[#11231D] border border-[#224438] flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-[#00B4D8]/15 text-[#00B4D8] border border-[#00B4D8]/30 shrink-0">
+        <div className="p-4 rounded-lg bg-[#11231D] border border-[#224438] flex items-center gap-3">
+          <div className="p-2.5 rounded-md bg-[#00B4D8]/15 text-[#00B4D8] border border-[#00B4D8]/30 shrink-0">
             <Users className="w-4 h-4" />
           </div>
           <div>
@@ -161,7 +161,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
         </div>
       </div>
 
-      {/* Bento Grid des Équipes */}
+      {/* Bento Grid des Équipes (bords plus carrés fidèles à Modulis) */}
       <div id="teams-bento-grid" data-element="bento-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {teams.map((team, idx) => {
           const isMixed = team.maleCount > 0 && team.femaleCount > 0;
@@ -169,14 +169,14 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
           return (
             <div
               key={team.id}
-              className="group relative flex flex-col justify-between p-5 rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] hover:border-[#00B4D8]/50 transition-all hover:shadow-xl hover:shadow-[#00B4D8]/5"
+              className="group relative flex flex-col justify-between p-5 rounded-lg bg-[#11231D] border border-[#224438] hover:border-[#00B4D8]/50 transition-all hover:shadow-xl hover:shadow-[#00B4D8]/5"
             >
               <div className="space-y-4">
                 {/* En-tête de carte */}
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="font-semibold text-white text-sm sm:text-base flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-[#00B4D8]/15 text-[#00B4D8] border border-[#00B4D8]/30 inline-flex items-center justify-center text-xs font-mono font-bold">
+                      <span className="w-6 h-6 rounded-md bg-[#00B4D8]/15 text-[#00B4D8] border border-[#00B4D8]/30 inline-flex items-center justify-center text-xs font-mono font-bold">
                         {idx + 1}
                       </span>
                       <span>{team.name}</span>
@@ -188,7 +188,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
 
                   {/* Badge de parité */}
                   <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border ${
                       isMixed
                         ? 'bg-[#F27A82]/15 text-[#FF9EAA] border-[#F27A82]/30'
                         : 'bg-[#162E26] text-zinc-400 border-[#224438]'
@@ -203,7 +203,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
                   {team.members.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between p-2.5 rounded-xl bg-[#162E26]/70 border border-[#224438]/70 text-xs gap-2"
+                      className="flex items-center justify-between p-2.5 rounded-md bg-[#162E26]/70 border border-[#224438]/70 text-xs gap-2"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <ParticipantAvatar
@@ -226,7 +226,7 @@ export function TeamView({ result, onRegenerate, onExportCSV, isAdmin = true }: 
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 font-mono text-xs text-white shrink-0 bg-[#0B1713] px-2 py-1 rounded-lg border border-[#224438]">
+                      <div className="flex items-center gap-1 font-mono text-xs text-white shrink-0 bg-[#0B1713] px-2 py-1 rounded-md border border-[#224438]">
                         <GitCommit className="w-3 h-3 text-[#10B981]" />
                         <span>{member.commits}</span>
                       </div>

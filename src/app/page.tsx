@@ -286,7 +286,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2.5">
           {/* Logo & Titre Modulis */}
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#00B4D8] to-[#10B981] flex items-center justify-center text-[#0B1713] font-black shadow-lg shadow-[#00B4D8]/20 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-gradient-to-tr from-[#00B4D8] to-[#10B981] flex items-center justify-center text-[#0B1713] font-black shadow-lg shadow-[#00B4D8]/20 shrink-0">
               <span className="text-base tracking-tighter">M</span>
             </div>
             <div className="min-w-0">
@@ -294,12 +294,12 @@ export default function Home() {
                 <span className="font-extrabold text-sm sm:text-base tracking-tight text-white uppercase truncate">
                   MODULIS
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E6392F]/15 text-[#F27A82] border border-[#E6392F]/30 shrink-0">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#E6392F]/15 text-[#F27A82] border border-[#E6392F]/30 shrink-0">
                   Hacktoberfest 26
                 </span>
               </div>
               <p className="text-[11px] text-[#00B4D8] hidden sm:block truncate font-medium">
-                Team Balancer • AI + Hackfest Yaoundé
+                Team Balancer • Hacktoberfest Yaoundé 26
               </p>
             </div>
           </div>
@@ -319,7 +319,7 @@ export default function Home() {
                   type="button"
                   id="btn-import-export-modal"
                   onClick={() => setIsImportExportOpen(true)}
-                  className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-colors"
+                  className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-md transition-colors"
                   title="Importer ou exporter les participants (CSV/JSON)"
                 >
                   <Database className="w-4 h-4 text-[#00B4D8]" />
@@ -331,7 +331,7 @@ export default function Home() {
                     type="button"
                     id="btn-clear-all-participants"
                     onClick={handleClearAll}
-                    className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
+                    className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-md transition-colors"
                     title="Vider la liste des participants"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -342,7 +342,7 @@ export default function Home() {
                   type="button"
                   id="btn-open-register-modal"
                   onClick={() => setIsRegisterOpen(true)}
-                  className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
+                  className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-md shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Nouveau</span>
@@ -372,7 +372,7 @@ export default function Home() {
         <section
           id="section-team-generator"
           data-section="team-generator-cta"
-          className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#11231D] border border-[#224438] shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4"
+          className="p-4 sm:p-5 rounded-lg bg-[#11231D] border border-[#224438] shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4"
         >
           <div className="space-y-1 text-center sm:text-left">
             <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 justify-center sm:justify-start">
@@ -390,13 +390,13 @@ export default function Home() {
               id="btn-generate-teams"
               onClick={handleGenerateTeams}
               disabled={participants.length < 3}
-              className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-md shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <Sparkles className="w-4 h-4 text-white" />
               <span>Générer les équipes de 3</span>
             </button>
           ) : (
-            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-zinc-300 bg-[#162E26] border border-[#224438] rounded-xl">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-zinc-300 bg-[#162E26] border border-[#224438] rounded-md">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F4A91E] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F4A91E]" />

@@ -74,7 +74,7 @@ export function ParticipantTable({
   const getRankBadge = (rank: number) => {
     if (rank === 1) {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#F4A91E]/20 text-[#F4A91E] border border-[#F4A91E]/40 shadow-sm shadow-[#F4A91E]/15">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-[#F4A91E]/20 text-[#F4A91E] border border-[#F4A91E]/40 shadow-sm shadow-[#F4A91E]/15">
           <Trophy className="w-3.5 h-3.5 text-[#F4A91E]" />
           <span>#1</span>
         </span>
@@ -82,7 +82,7 @@ export function ParticipantTable({
     }
     if (rank === 2) {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-300/15 text-slate-100 border border-slate-400/40">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-300/15 text-slate-100 border border-slate-400/40">
           <Medal className="w-3.5 h-3.5 text-slate-300" />
           <span>#2</span>
         </span>
@@ -90,14 +90,14 @@ export function ParticipantTable({
     }
     if (rank === 3) {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#E6392F]/20 text-[#F27A82] border border-[#E6392F]/40">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-[#E6392F]/20 text-[#F27A82] border border-[#E6392F]/40">
           <Award className="w-3.5 h-3.5 text-[#E6392F]" />
           <span>#3</span>
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center justify-center min-w-[28px] h-6 px-1.5 rounded-lg text-xs font-mono font-medium text-zinc-300 bg-[#0B1713] border border-[#224438]">
+      <span className="inline-flex items-center justify-center min-w-[28px] h-6 px-1.5 rounded-md text-xs font-mono font-medium text-zinc-300 bg-[#0B1713] border border-[#224438]">
         #{rank}
       </span>
     );
@@ -107,7 +107,7 @@ export function ParticipantTable({
     <div
       id="participants-table-card"
       data-component="participant-table"
-      className="bg-[#11231D] border border-[#224438] rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl shadow-black/40"
+      className="bg-[#11231D] border border-[#224438] rounded-lg overflow-hidden shadow-xl shadow-black/40"
     >
       {/* Barre d'outils du tableau */}
       <div
@@ -123,7 +123,7 @@ export function ParticipantTable({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher par nom ou pseudo..."
-            className="w-full pl-10 pr-9 py-2 bg-[#162E26] border border-[#224438] focus:border-[#00B4D8] rounded-xl text-base sm:text-xs text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#00B4D8]/20 transition-all"
+            className="w-full pl-10 pr-9 py-2 bg-[#162E26] border border-[#224438] focus:border-[#00B4D8] rounded-md text-base sm:text-xs text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#00B4D8]/20 transition-all"
           />
           {search && (
             <button
@@ -149,7 +149,7 @@ export function ParticipantTable({
       {/* Contenu : Si aucun participant */}
       {participants.length === 0 ? (
         <div className="p-8 sm:p-14 text-center space-y-4">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-[#0D1B17] border border-[#224438] flex items-center justify-center text-zinc-400">
+          <div className="w-14 h-14 mx-auto rounded-md bg-[#0D1B17] border border-[#224438] flex items-center justify-center text-zinc-400">
             <User className="w-7 h-7" />
           </div>
           <div className="space-y-1">
@@ -166,7 +166,7 @@ export function ParticipantTable({
             <button
               type="button"
               onClick={onOpenAddModal}
-              className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl transition-all shadow-lg shadow-[#E6392F]/20 active:scale-95"
+              className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-md transition-all shadow-lg shadow-[#E6392F]/20 active:scale-95"
             >
               <span>+ Ajouter le premier participant</span>
             </button>
@@ -234,7 +234,7 @@ export function ParticipantTable({
                             <button
                               type="button"
                               onClick={() => saveEdit(participant.id)}
-                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-xl transition-colors"
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-md transition-colors"
                               aria-label="Valider les modifications"
                             >
                               <Check className="w-4 h-4" />
@@ -242,7 +242,7 @@ export function ParticipantTable({
                             <button
                               type="button"
                               onClick={cancelEdit}
-                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-xl transition-colors"
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-md transition-colors"
                               aria-label="Annuler"
                             >
                               <X className="w-4 h-4" />
@@ -253,7 +253,7 @@ export function ParticipantTable({
                             <button
                               type="button"
                               onClick={() => startEdit(participant)}
-                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-xl transition-colors"
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-md transition-colors"
                               aria-label="Modifier"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -265,7 +265,7 @@ export function ParticipantTable({
                                   onDelete(participant.id);
                                 }
                               }}
-                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-md transition-colors"
                               aria-label="Supprimer"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -289,7 +289,7 @@ export function ParticipantTable({
                           className="w-20 px-2 py-1 bg-[#162E26] border border-[#00B4D8] rounded text-white text-xs font-mono"
                         />
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0B1713] border border-[#224438] text-white font-mono font-semibold text-xs">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#0B1713] border border-[#224438] text-white font-mono font-semibold text-xs">
                           <GitCommit className="w-3.5 h-3.5 text-[#10B981]" />
                           <span>{participant.commits}</span>
                         </span>
@@ -306,7 +306,7 @@ export function ParticipantTable({
                       />
                     ) : (
                       <span
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium border ${
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
                           participant.gender === 'female'
                             ? 'bg-[#F27A82]/15 text-[#F27A82] border-[#F27A82]/30'
                             : 'bg-[#00B4D8]/15 text-[#00B4D8] border-[#00B4D8]/30'
@@ -355,7 +355,7 @@ export function ParticipantTable({
                             type="text"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="px-2.5 py-1.5 bg-[#162E26] border border-[#00B4D8] rounded-lg text-white text-xs w-full max-w-xs focus:outline-none"
+                            className="px-2.5 py-1.5 bg-[#162E26] border border-[#00B4D8] rounded-md text-white text-xs w-full max-w-xs focus:outline-none"
                             autoFocus
                           />
                         ) : (
@@ -397,10 +397,10 @@ export function ParticipantTable({
                             min="0"
                             value={editCommits}
                             onChange={(e) => setEditCommits(parseInt(e.target.value, 10) || 0)}
-                            className="px-2 py-1 bg-[#162E26] border border-[#00B4D8] rounded-lg text-white text-xs w-20 text-center font-mono focus:outline-none"
+                            className="px-2 py-1 bg-[#162E26] border border-[#00B4D8] rounded-md text-white text-xs w-20 text-center font-mono focus:outline-none"
                           />
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B1713] border border-[#224438] text-white font-mono font-semibold">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#0B1713] border border-[#224438] text-white font-mono font-semibold">
                             <GitCommit className="w-3.5 h-3.5 text-[#10B981]" />
                             <span>{participant.commits}</span>
                           </div>
@@ -419,7 +419,7 @@ export function ParticipantTable({
                           />
                         ) : (
                           <span
-                            className={`px-2.5 py-1 rounded-lg text-xs font-medium border ${
+                            className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
                               participant.gender === 'female'
                                 ? 'bg-[#F27A82]/15 text-[#F27A82] border-[#F27A82]/30'
                                 : 'bg-[#00B4D8]/15 text-[#00B4D8] border-[#00B4D8]/30'
@@ -439,7 +439,7 @@ export function ParticipantTable({
                                 <button
                                   type="button"
                                   onClick={() => saveEdit(participant.id)}
-                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-lg transition-colors"
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-md transition-colors"
                                   title="Valider"
                                 >
                                   <Check className="w-4 h-4" />
@@ -447,7 +447,7 @@ export function ParticipantTable({
                                 <button
                                   type="button"
                                   onClick={cancelEdit}
-                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-lg transition-colors"
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-md transition-colors"
                                   title="Annuler"
                                 >
                                   <X className="w-4 h-4" />
@@ -458,7 +458,7 @@ export function ParticipantTable({
                                 <button
                                   type="button"
                                   onClick={() => startEdit(participant)}
-                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-lg transition-colors opacity-70 group-hover:opacity-100"
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-md transition-colors opacity-70 group-hover:opacity-100"
                                   title="Modifier"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
@@ -470,7 +470,7 @@ export function ParticipantTable({
                                       onDelete(participant.id);
                                     }
                                   }}
-                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-lg transition-colors opacity-70 group-hover:opacity-100"
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-md transition-colors opacity-70 group-hover:opacity-100"
                                   title="Supprimer"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
