@@ -2,8 +2,16 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Participant, BalancingResult } from '@/types/participant';
+import { SyncStatus } from '@/types/sharedSpace';
 import { loadParticipants, saveParticipants, loadTeams, saveTeams } from '@/lib/storage';
 import { balanceTeams } from '@/lib/algorithm';
+import { isFirebaseConfigured } from '@/lib/firebase';
+import {
+  subscribeToEventState,
+  syncParticipantsToFirestore,
+  syncTeamsToFirestore,
+  clearAllOnFirestore,
+} from '@/lib/firebaseEventService';
 import { EventHeaderBanner } from '@/components/EventHeaderBanner';
 import { EventFooter } from '@/components/EventFooter';
 import { RegisterModal } from '@/components/RegisterModal';
@@ -11,6 +19,8 @@ import { ParticipantTable } from '@/components/ParticipantTable';
 import { StatsBar } from '@/components/StatsBar';
 import { TeamView } from '@/components/TeamView';
 import { ImportExportModal } from '@/components/ImportExportModal';
+import { LiveIndicator } from '@/components/LiveIndicator';
+import { AdminLoginModal } from '@/components/AdminLoginModal';
 import {
   UserPlus,
   Users,
@@ -23,41 +33,72 @@ import confetti from 'canvas-confetti';
 export default function Home() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [balancingResult, setBalancingResult] = useState<BalancingResult | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('connecting');
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isImportExportOpen, setIsImportExportOpen] = useState(false);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Chargement initial depuis le localStorage sans blocage SSR ni warning ESLint
+  // Initialisation et souscription temps réel Firebase
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const loadedParticipants = loadParticipants();
-      setParticipants(loadedParticipants);
-
-      const loadedTeamsData = loadTeams<BalancingResult>();
-      if (loadedTeamsData) {
-        setBalancingResult(loadedTeamsData);
+    // 1. Vérification du token de session Organisateur
+    if (typeof window !== 'undefined') {
+      const storedToken = sessionStorage.getItem('hackathon_admin_token');
+      if (storedToken) {
+        setIsAdmin(true);
       }
-      setIsMounted(true);
-    }, 0);
+    }
 
-    return () => clearTimeout(timer);
+    // 2. Connexion Firebase Firestore ou fallback LocalStorage
+    let unsubscribe: (() => void) | null = null;
+
+    if (isFirebaseConfigured()) {
+      setSyncStatus('connecting');
+      unsubscribe = subscribeToEventState(
+        (eventState) => {
+          setParticipants(eventState.participants);
+          setBalancingResult(eventState.balancingResult);
+          setSyncStatus('connected');
+          setIsMounted(true);
+        },
+        (error) => {
+          console.warn('Erreur Firestore, basculement en mode local :', error);
+          setSyncStatus('offline');
+          setParticipants(loadParticipants());
+          setBalancingResult(loadTeams());
+          setIsMounted(true);
+        }
+      );
+    } else {
+      // Si Firebase n'est pas configuré, mode local transparent
+      setSyncStatus('offline');
+      setParticipants(loadParticipants());
+      setBalancingResult(loadTeams());
+      setIsMounted(true);
+    }
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
-  // Sauvegarde automatique à chaque changement de participants
+  // Sauvegarde miroir locale automatique pour assurer la résilience hors-ligne
   useEffect(() => {
     if (isMounted) {
       saveParticipants(participants);
     }
   }, [participants, isMounted]);
 
-  // Sauvegarde des équipes générées
   useEffect(() => {
     if (isMounted) {
       saveTeams(balancingResult);
     }
   }, [balancingResult, isMounted]);
 
-  // Raccourci clavier global 'N' pour ouvrir la modale d'enregistrement
+  // Raccourci clavier global 'N' pour les organisateurs
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeTag = document.activeElement?.tagName.toLowerCase();
@@ -65,16 +106,28 @@ export default function Home() {
 
       if (e.key === 'n' || e.key === 'N') {
         e.preventDefault();
-        setIsRegisterOpen(true);
+        if (isAdmin) {
+          setIsRegisterOpen(true);
+        } else {
+          setIsAdminLoginOpen(true);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isAdmin]);
+
+  // Déconnexion de l'organisateur
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('hackathon_admin_token');
+    }
+    setIsAdmin(false);
+  };
 
   // Ajout d'un participant
-  const handleAddParticipant = (
+  const handleAddParticipant = async (
     data: Omit<Participant, 'id' | 'createdAt'>
   ) => {
     const newParticipant: Participant = {
@@ -83,41 +136,91 @@ export default function Home() {
       createdAt: Date.now(),
     };
 
-    setParticipants((prev) => [newParticipant, ...prev]);
+    const nextParticipants = [newParticipant, ...participants];
+    setParticipants(nextParticipants);
+
+    if (isFirebaseConfigured()) {
+      setSyncStatus('syncing');
+      await syncParticipantsToFirestore(
+        nextParticipants,
+        `Ajout de "${newParticipant.name}"`
+      );
+      setSyncStatus('connected');
+    }
   };
 
   // Mise à jour d'un participant
-  const handleUpdateParticipant = (id: string, updates: Partial<Participant>) => {
-    setParticipants((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updates } : p))
+  const handleUpdateParticipant = async (
+    id: string,
+    updates: Partial<Participant>
+  ) => {
+    const nextParticipants = participants.map((p) =>
+      p.id === id ? { ...p, ...updates } : p
     );
+    setParticipants(nextParticipants);
+
+    if (isFirebaseConfigured()) {
+      setSyncStatus('syncing');
+      await syncParticipantsToFirestore(
+        nextParticipants,
+        'Mise à jour d\'un participant'
+      );
+      setSyncStatus('connected');
+    }
   };
 
   // Suppression d'un participant
-  const handleDeleteParticipant = (id: string) => {
-    setParticipants((prev) => prev.filter((p) => p.id !== id));
+  const handleDeleteParticipant = async (id: string) => {
+    const target = participants.find((p) => p.id === id);
+    const nextParticipants = participants.filter((p) => p.id !== id);
+    setParticipants(nextParticipants);
+
+    if (isFirebaseConfigured()) {
+      setSyncStatus('syncing');
+      await syncParticipantsToFirestore(
+        nextParticipants,
+        `Suppression de "${target?.name || 'un participant'}"`
+      );
+      setSyncStatus('connected');
+    }
   };
 
   // Import en masse
-  const handleImport = (imported: Participant[]) => {
+  const handleImport = async (imported: Participant[]) => {
     setParticipants(imported);
     setBalancingResult(null);
+
+    if (isFirebaseConfigured()) {
+      setSyncStatus('syncing');
+      await syncParticipantsToFirestore(
+        imported,
+        `Import de ${imported.length} participants`
+      );
+      await syncTeamsToFirestore(null);
+      setSyncStatus('connected');
+    }
   };
 
   // Réinitialisation de la liste
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     if (
       window.confirm(
-        'Êtes-vous sûr de vouloir supprimer tous les participants enregistrés ?'
+        'Êtes-vous sûr de vouloir supprimer tous les participants enregistrés ? Cette action sera répercutée en direct sur tous les écrans.'
       )
     ) {
       setParticipants([]);
       setBalancingResult(null);
+
+      if (isFirebaseConfigured()) {
+        setSyncStatus('syncing');
+        await clearAllOnFirestore();
+        setSyncStatus('connected');
+      }
     }
   };
 
   // Génération des équipes
-  const handleGenerateTeams = useCallback(() => {
+  const handleGenerateTeams = useCallback(async () => {
     if (participants.length < 3) {
       alert('Veuillez enregistrer au moins 3 participants pour former une équipe.');
       return;
@@ -132,6 +235,12 @@ export default function Home() {
       origin: { y: 0.5 },
       colors: ['#E6392F', '#F4A91E', '#00B4D8', '#10B981', '#F27A82'],
     });
+
+    if (isFirebaseConfigured()) {
+      setSyncStatus('syncing');
+      await syncTeamsToFirestore(result);
+      setSyncStatus('connected');
+    }
   }, [participants]);
 
   // Export CSV des équipes
@@ -195,43 +304,54 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Boutons d'action rapides */}
+          {/* Statut Live et Actions rapides */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              type="button"
-              id="btn-import-export-modal"
-              onClick={() => setIsImportExportOpen(true)}
-              className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-colors"
-              title="Importer ou exporter les participants (CSV/JSON)"
-            >
-              <Database className="w-4 h-4 text-[#00B4D8]" />
-              <span className="hidden sm:inline">Données</span>
-            </button>
+            <LiveIndicator
+              isAdmin={isAdmin}
+              syncStatus={syncStatus}
+              onOpenLogin={() => setIsAdminLoginOpen(true)}
+              onLogout={handleLogout}
+            />
 
-            {participants.length > 0 && (
-              <button
-                type="button"
-                id="btn-clear-all-participants"
-                onClick={handleClearAll}
-                className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
-                title="Vider la liste des participants"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+            {isAdmin && (
+              <>
+                <button
+                  type="button"
+                  id="btn-import-export-modal"
+                  onClick={() => setIsImportExportOpen(true)}
+                  className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white bg-[#162E26] hover:bg-[#1C3B31] border border-[#224438] rounded-xl transition-colors"
+                  title="Importer ou exporter les participants (CSV/JSON)"
+                >
+                  <Database className="w-4 h-4 text-[#00B4D8]" />
+                  <span className="hidden sm:inline">Données</span>
+                </button>
+
+                {participants.length > 0 && (
+                  <button
+                    type="button"
+                    id="btn-clear-all-participants"
+                    onClick={handleClearAll}
+                    className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
+                    title="Vider la liste des participants"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  id="btn-open-register-modal"
+                  onClick={() => setIsRegisterOpen(true)}
+                  className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>Nouveau</span>
+                  <kbd className="hidden md:inline px-1.5 py-0.5 bg-black/25 rounded text-[10px] font-mono border border-white/20">
+                    N
+                  </kbd>
+                </button>
+              </>
             )}
-
-            <button
-              type="button"
-              id="btn-open-register-modal"
-              onClick={() => setIsRegisterOpen(true)}
-              className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>Nouveau</span>
-              <kbd className="hidden md:inline px-1.5 py-0.5 bg-black/25 rounded text-[10px] font-mono border border-white/20">
-                N
-              </kbd>
-            </button>
           </div>
         </div>
       </header>
@@ -264,16 +384,26 @@ export default function Home() {
             </p>
           </div>
 
-          <button
-            type="button"
-            id="btn-generate-teams"
-            onClick={handleGenerateTeams}
-            disabled={participants.length < 3}
-            className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            <Sparkles className="w-4 h-4 text-white" />
-            <span>Générer les équipes de 3</span>
-          </button>
+          {isAdmin ? (
+            <button
+              type="button"
+              id="btn-generate-teams"
+              onClick={handleGenerateTeams}
+              disabled={participants.length < 3}
+              className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-xl shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              <Sparkles className="w-4 h-4 text-white" />
+              <span>Générer les équipes de 3</span>
+            </button>
+          ) : (
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-zinc-300 bg-[#162E26] border border-[#224438] rounded-xl">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F4A91E] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F4A91E]" />
+              </span>
+              <span>En attente du tirage par les organisateurs</span>
+            </div>
+          )}
         </section>
 
         {/* Section 4 : Vue des équipes générées */}
@@ -283,6 +413,7 @@ export default function Home() {
               result={balancingResult}
               onRegenerate={handleGenerateTeams}
               onExportCSV={handleExportTeamsCSV}
+              isAdmin={isAdmin}
             />
           </section>
         )}
@@ -300,6 +431,7 @@ export default function Home() {
             onUpdate={handleUpdateParticipant}
             onDelete={handleDeleteParticipant}
             onOpenAddModal={() => setIsRegisterOpen(true)}
+            isAdmin={isAdmin}
           />
         </section>
       </main>
@@ -307,19 +439,26 @@ export default function Home() {
       {/* Footer officiel de l'événement avec sponsors et coordonnées */}
       <EventFooter />
 
-      {/* Modale d'enregistrement rapide */}
+      {/* Modale d'enregistrement rapide (Organisateur) */}
       <RegisterModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
         onAdd={handleAddParticipant}
       />
 
-      {/* Modale d'import / export */}
+      {/* Modale d'import / export (Organisateur) */}
       <ImportExportModal
         isOpen={isImportExportOpen}
         onClose={() => setIsImportExportOpen(false)}
         participants={participants}
         onImport={handleImport}
+      />
+
+      {/* Modale d'authentification Organisateur */}
+      <AdminLoginModal
+        isOpen={isAdminLoginOpen}
+        onClose={() => setIsAdminLoginOpen(false)}
+        onSuccess={() => setIsAdmin(true)}
       />
     </div>
   );

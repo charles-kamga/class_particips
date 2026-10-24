@@ -23,6 +23,7 @@ interface ParticipantTableProps {
   onUpdate: (id: string, updates: Partial<Participant>) => void;
   onDelete: (id: string) => void;
   onOpenAddModal: () => void;
+  isAdmin?: boolean;
 }
 
 export function ParticipantTable({
@@ -30,6 +31,7 @@ export function ParticipantTable({
   onUpdate,
   onDelete,
   onOpenAddModal,
+  isAdmin = true,
 }: ParticipantTableProps) {
   const [search, setSearch] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -155,16 +157,20 @@ export function ParticipantTable({
               Aucun participant enregistré
             </h3>
             <p className="text-xs sm:text-sm text-zinc-300 max-w-sm mx-auto">
-              Cliquez sur le bouton « + Nouveau Participant » ou utilisez la touche <kbd className="px-1.5 py-0.5 bg-[#0D1B17] border border-[#224438] rounded text-white font-mono text-xs">N</kbd> pour commencer.
+              {isAdmin
+                ? "Cliquez sur le bouton « + Nouveau Participant » ou utilisez la touche N pour commencer."
+                : "Les organisateurs n'ont pas encore ajouté de participants à cet événement."}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onOpenAddModal}
-            className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl transition-all shadow-lg shadow-[#E6392F]/20 active:scale-95"
-          >
-            <span>+ Ajouter le premier participant</span>
-          </button>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={onOpenAddModal}
+              className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-xl transition-all shadow-lg shadow-[#E6392F]/20 active:scale-95"
+            >
+              <span>+ Ajouter le premier participant</span>
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -221,51 +227,53 @@ export function ParticipantTable({
                     </div>
 
                     {/* Actions de modification / suppression */}
-                    <div className="flex items-center gap-1 shrink-0">
-                      {isEditing ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => saveEdit(participant.id)}
-                            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-xl transition-colors"
-                            aria-label="Valider les modifications"
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={cancelEdit}
-                            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-xl transition-colors"
-                            aria-label="Annuler"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => startEdit(participant)}
-                            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-xl transition-colors"
-                            aria-label="Modifier"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (window.confirm(`Supprimer "${participant.name}" de la liste ?`)) {
-                                onDelete(participant.id);
-                              }
-                            }}
-                            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
-                            aria-label="Supprimer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
+                    {isAdmin && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        {isEditing ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => saveEdit(participant.id)}
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-xl transition-colors"
+                              aria-label="Valider les modifications"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={cancelEdit}
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-xl transition-colors"
+                              aria-label="Annuler"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => startEdit(participant)}
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-xl transition-colors"
+                              aria-label="Modifier"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Supprimer "${participant.name}" de la liste ?`)) {
+                                  onDelete(participant.id);
+                                }
+                              }}
+                              className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-xl transition-colors"
+                              aria-label="Supprimer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Ligne 2 : Commits + Toggle Sexe */}
@@ -288,13 +296,25 @@ export function ParticipantTable({
                       )}
                     </div>
 
-                    <GenderSwitch
-                      value={participant.gender}
-                      onChange={(newGender: Gender) =>
-                        onUpdate(participant.id, { gender: newGender })
-                      }
-                      size="sm"
-                    />
+                    {isAdmin ? (
+                      <GenderSwitch
+                        value={participant.gender}
+                        onChange={(newGender: Gender) =>
+                          onUpdate(participant.id, { gender: newGender })
+                        }
+                        size="sm"
+                      />
+                    ) : (
+                      <span
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium border ${
+                          participant.gender === 'female'
+                            ? 'bg-[#F27A82]/15 text-[#F27A82] border-[#F27A82]/30'
+                            : 'bg-[#00B4D8]/15 text-[#00B4D8] border-[#00B4D8]/30'
+                        }`}
+                      >
+                        {participant.gender === 'female' ? 'Femme ♀' : 'Homme ♂'}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -309,8 +329,8 @@ export function ParticipantTable({
                   <th className="py-3.5 px-4 w-20 text-center">Rang</th>
                   <th className="py-3.5 px-4">Participant</th>
                   <th className="py-3.5 px-4 text-center w-44">Commits d&apos;Octobre</th>
-                  <th className="py-3.5 px-4 text-center w-52">Sexe (Toggle)</th>
-                  <th className="py-3.5 px-4 text-right w-24">Actions</th>
+                  <th className="py-3.5 px-4 text-center w-52">{isAdmin ? "Sexe (Toggle)" : "Sexe"}</th>
+                  {isAdmin && <th className="py-3.5 px-4 text-right w-24">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1C3B31] text-xs">
@@ -389,63 +409,77 @@ export function ParticipantTable({
 
                       {/* Switch Sexe */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <GenderSwitch
-                          value={participant.gender}
-                          onChange={(newGender: Gender) =>
-                            onUpdate(participant.id, { gender: newGender })
-                          }
-                          size="sm"
-                        />
+                        {isAdmin ? (
+                          <GenderSwitch
+                            value={participant.gender}
+                            onChange={(newGender: Gender) =>
+                              onUpdate(participant.id, { gender: newGender })
+                            }
+                            size="sm"
+                          />
+                        ) : (
+                          <span
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium border ${
+                              participant.gender === 'female'
+                                ? 'bg-[#F27A82]/15 text-[#F27A82] border-[#F27A82]/30'
+                                : 'bg-[#00B4D8]/15 text-[#00B4D8] border-[#00B4D8]/30'
+                            }`}
+                          >
+                            {participant.gender === 'female' ? 'Femme ♀' : 'Homme ♂'}
+                          </span>
+                        )}
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1">
-                          {isEditing ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => saveEdit(participant.id)}
-                                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-lg transition-colors"
-                                title="Valider"
-                              >
-                                <Check className="w-4 h-4" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={cancelEdit}
-                                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-lg transition-colors"
-                                title="Annuler"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => startEdit(participant)}
-                                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-lg transition-colors opacity-70 group-hover:opacity-100"
-                                title="Modifier"
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (window.confirm(`Supprimer "${participant.name}" de la liste ?`)) {
-                                    onDelete(participant.id);
-                                  }
-                                }}
-                                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-lg transition-colors opacity-70 group-hover:opacity-100"
-                                title="Supprimer"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
+                      {isAdmin && (
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
+                            {isEditing ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => saveEdit(participant.id)}
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-[#10B981] hover:bg-[#10B981]/20 rounded-lg transition-colors"
+                                  title="Valider"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={cancelEdit}
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:bg-[#162E26] rounded-lg transition-colors"
+                                  title="Annuler"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => startEdit(participant)}
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#162E26] rounded-lg transition-colors opacity-70 group-hover:opacity-100"
+                                  title="Modifier"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (window.confirm(`Supprimer "${participant.name}" de la liste ?`)) {
+                                      onDelete(participant.id);
+                                    }
+                                  }}
+                                  className="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-lg transition-colors opacity-70 group-hover:opacity-100"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
