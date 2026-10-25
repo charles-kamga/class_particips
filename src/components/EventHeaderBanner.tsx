@@ -100,9 +100,9 @@ export function EventHeaderBanner() {
           {/* Note Pinned Hack Day Count Down */}
           <div id="banner-countdown-widget" data-element="countdown-widget" className="flex flex-col items-center justify-center shrink-0">
             {/* Badge Titre "Hack day count down" */}
-            <div id="countdown-badge-title" className="px-3 py-1 rounded-md bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
+            {/* <div id="countdown-badge-title" className="px-3 py-1 rounded-md bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
               Hack day count down
-            </div>
+            </div> */}
 
             {/* Papier Post-It blanc avec punaise dorée */}
             <div id="pinned-postit-note" data-element="pinned-postit" className="relative bg-white text-[#11231D] rounded-lg p-4 sm:p-5 w-44 sm:w-48 text-center pinned-card-shadow transform -rotate-1 hover:rotate-0 transition-transform duration-300">
