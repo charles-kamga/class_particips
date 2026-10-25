@@ -98,38 +98,10 @@ export function EventHeaderBanner() {
           </div>
 
           {/* Note Pinned Hack Day Count Down */}
-          <div id="banner-countdown-widget" data-element="countdown-widget" className="flex flex-col items-center justify-center shrink-0">
-            {/* Badge Titre "Hack day count down" */}
-            {/* <div id="countdown-badge-title" className="px-3 py-1 rounded-md bg-[#0D1B17] border border-[#224438] text-white text-[11px] font-bold tracking-wide uppercase shadow-sm mb-[-10px] z-20">
-              Hack day count down
-            </div> */}
-
-            {/* Papier Post-It blanc avec punaise dorée */}
-            <div id="pinned-postit-note" data-element="pinned-postit" className="relative bg-white text-[#11231D] rounded-lg p-4 sm:p-5 w-44 sm:w-48 text-center pinned-card-shadow transform -rotate-1 hover:rotate-0 transition-transform duration-300">
-              {/* Punaise dorée 📌 */}
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 flex items-center justify-center drop-shadow-md z-30">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#D98200] via-[#F4A91E] to-[#FFF0A0] shadow-md border border-[#9A5B00] relative">
-                  <div className="absolute inset-0.5 rounded-full bg-white/40 blur-[0.5px]" />
-                </div>
-              </div>
-
-              {/* Chiffre Pixel Art Rouge */}
-              <div id="countdown-pixel-days" className="pt-2 font-mono font-black text-4xl sm:text-5xl text-[#E6392F] tracking-tighter leading-none select-none">
-                {formattedDays}
-              </div>
-
-              {/* Libellé "DAYS TO GO" */}
-              <div className="mt-1.5 text-[10px] sm:text-xs font-black tracking-widest text-[#162E26] uppercase">
-                DAYS TO GO
-              </div>
-
-              <div className="text-[9px] text-zinc-500 font-semibold mt-0.5">
-                Avant le Hackathon
-              </div>
-            </div>
+          
           </div>
         </div>
       </div>
-    </div>
+    
   );
 }
