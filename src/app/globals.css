@@ -7,10 +7,11 @@
   --hack-surface-1: #10231D;
   --hack-surface-2: #162E26;
   --hack-surface-border: #224438;
-  --hack-red: #E6392F;
-  --hack-gold: #F4A91E;
-  --hack-pink: #F27A82;
-  --hack-blue: #4D7ECE;
+  --hack-red: #E53927;
+  --hack-gold: #F5B726;
+  --hack-pink: #E97B77;
+  --hack-blue: #6DA3E0;
+  --hack-burgundy: #671912;
   --hack-cyan: #00B4D8;
 }
 
@@ -25,6 +26,7 @@
   --color-hack-gold: var(--hack-gold);
   --color-hack-pink: var(--hack-pink);
   --color-hack-blue: var(--hack-blue);
+  --color-hack-burgundy: var(--hack-burgundy);
   --color-hack-cyan: var(--hack-cyan);
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;

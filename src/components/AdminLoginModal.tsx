@@ -34,13 +34,12 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
   // Focus automatique à l'ouverture
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
-    } else {
-      resetForm();
+      return () => clearTimeout(timer);
     }
-  }, [isOpen, resetForm]);
+  }, [isOpen]);
 
   // Fermeture sur Échap
   useEffect(() => {

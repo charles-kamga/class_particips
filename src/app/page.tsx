@@ -33,7 +33,12 @@ import confetti from 'canvas-confetti';
 export default function Home() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [balancingResult, setBalancingResult] = useState<BalancingResult | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return Boolean(sessionStorage.getItem('hackathon_admin_token'));
+    }
+    return false;
+  });
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('connecting');
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isImportExportOpen, setIsImportExportOpen] = useState(false);
@@ -42,19 +47,11 @@ export default function Home() {
 
   // Initialisation et souscription temps réel Firebase
   useEffect(() => {
-    // 1. Vérification du token de session Organisateur
-    if (typeof window !== 'undefined') {
-      const storedToken = sessionStorage.getItem('hackathon_admin_token');
-      if (storedToken) {
-        setIsAdmin(true);
-      }
-    }
 
     // 2. Connexion Firebase Firestore ou fallback LocalStorage
     let unsubscribe: (() => void) | null = null;
 
     if (isFirebaseConfigured()) {
-      setSyncStatus('connecting');
       unsubscribe = subscribeToEventState(
         (eventState) => {
           setParticipants(eventState.participants);
@@ -66,16 +63,20 @@ export default function Home() {
           console.warn('Erreur Firestore, basculement en mode local :', error);
           setSyncStatus('offline');
           setParticipants(loadParticipants());
-          setBalancingResult(loadTeams());
+          setBalancingResult(loadTeams<BalancingResult>());
           setIsMounted(true);
         }
       );
     } else {
       // Si Firebase n'est pas configuré, mode local transparent
-      setSyncStatus('offline');
-      setParticipants(loadParticipants());
-      setBalancingResult(loadTeams());
-      setIsMounted(true);
+      const localParticipants = loadParticipants();
+      const localTeams = loadTeams<BalancingResult>();
+      queueMicrotask(() => {
+        setSyncStatus('offline');
+        setParticipants(localParticipants);
+        setBalancingResult(localTeams);
+        setIsMounted(true);
+      });
     }
 
     return () => {
@@ -233,7 +234,7 @@ export default function Home() {
       particleCount: 80,
       spread: 80,
       origin: { y: 0.5 },
-      colors: ['#E6392F', '#F4A91E', '#00B4D8', '#10B981', '#F27A82'],
+      colors: ['#E53927', '#F5B726', '#6DA3E0', '#E97B77', '#671912'],
     });
 
     if (isFirebaseConfigured()) {
@@ -276,7 +277,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1713] text-[#F3F4F6] flex flex-col font-sans selection:bg-[#E6392F]/30 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0B1713] text-[#F3F4F6] flex flex-col font-sans selection:bg-[#E53927]/30 selection:text-white overflow-x-hidden">
       {/* Navigation supérieure */}
       <header
         id="app-header"
@@ -294,7 +295,7 @@ export default function Home() {
                 <span className="font-extrabold text-sm sm:text-base tracking-tight text-white uppercase truncate">
                   MODULIS
                 </span>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#E6392F]/15 text-[#F27A82] border border-[#E6392F]/30 shrink-0">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#E53927]/15 text-[#E97B77] border border-[#E53927]/30 shrink-0">
                   Hacktoberfest 26
                 </span>
               </div>
@@ -331,7 +332,7 @@ export default function Home() {
                     type="button"
                     id="btn-clear-all-participants"
                     onClick={handleClearAll}
-                    className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E6392F] hover:bg-[#E6392F]/15 rounded-md transition-colors"
+                    className="min-h-[40px] min-w-[40px] flex items-center justify-center text-zinc-400 hover:text-[#E53927] hover:bg-[#E53927]/15 rounded-md transition-colors"
                     title="Vider la liste des participants"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -342,7 +343,7 @@ export default function Home() {
                   type="button"
                   id="btn-open-register-modal"
                   onClick={() => setIsRegisterOpen(true)}
-                  className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E6392F] to-[#F4A91E] hover:opacity-95 rounded-md shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
+                  className="min-h-[40px] inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#E53927] to-[#F5B726] hover:opacity-95 rounded-md shadow-lg shadow-[#E53927]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Nouveau</span>
@@ -390,7 +391,7 @@ export default function Home() {
               id="btn-generate-teams"
               onClick={handleGenerateTeams}
               disabled={participants.length < 3}
-              className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E6392F] via-[#F4A91E] to-[#00B4D8] hover:opacity-95 rounded-md shadow-lg shadow-[#E6392F]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="min-h-[46px] w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#E53927] via-[#F5B726] to-[#00B4D8] hover:opacity-95 rounded-md shadow-lg shadow-[#E53927]/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <Sparkles className="w-4 h-4 text-white" />
               <span>Générer les équipes de 3</span>
@@ -398,8 +399,8 @@ export default function Home() {
           ) : (
             <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-zinc-300 bg-[#162E26] border border-[#224438] rounded-md">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F4A91E] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F4A91E]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5B726] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5B726]" />
               </span>
               <span>En attente du tirage par les organisateurs</span>
             </div>

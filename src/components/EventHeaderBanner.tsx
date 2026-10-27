@@ -1,36 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { PixelStaircaseRibbon } from './PixelStaircaseRibbon';
+import { HacktoberfestArtwork } from './HacktoberfestArtwork';
 
 export function EventHeaderBanner() {
-  const [daysLeft, setDaysLeft] = useState<number>(9);
-
-  // Calcul du nombre de jours restants jusqu'au 31 octobre
-  useEffect(() => {
-    const calculateDaysToGo = () => {
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      let targetDate = new Date(currentYear, 9, 31, 10, 0, 0); // 31 Octobre à 10:00
-
-      // Si le 31 octobre de cette année est déjà passé, prendre l'année suivante
-      if (now.getTime() > targetDate.getTime()) {
-        targetDate = new Date(currentYear + 1, 9, 31, 10, 0, 0);
-      }
-
-      const diffMs = targetDate.getTime() - now.getTime();
-      const days = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-      setDaysLeft(days);
-    };
-
-    calculateDaysToGo();
-    const interval = setInterval(calculateDaysToGo, 60000 * 60); // actualisation toutes les heures
-    return () => clearInterval(interval);
-  }, []);
-
-  const formattedDays = daysLeft < 10 ? `0${daysLeft}` : `${daysLeft}`;
-
   return (
     <div
       id="event-banner-card"
@@ -42,6 +17,11 @@ export function EventHeaderBanner() {
 
       {/* Fond texture calendrier discret */}
       <div className="absolute inset-0 bg-calendar-grid opacity-30 pointer-events-none" />
+
+      {/* Filigrane vectoriel officiel tous.svg en arrière-plan */}
+      <div className="absolute -right-16 -bottom-24 w-80 h-72 opacity-15 pointer-events-none select-none overflow-hidden">
+        <HacktoberfestArtwork className="w-full h-full" />
+      </div>
 
       {/* Contenu principal */}
       <div className="relative z-10 p-4 sm:p-6 lg:p-7">
@@ -64,11 +44,11 @@ export function EventHeaderBanner() {
               </div>
             </div>
 
-            {/* Titre Principal (sans le badge token AI + HACKFEST) */}
+            {/* Titre Principal */}
             <div id="banner-event-title">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white uppercase leading-tight">
                 HACKTOBERFEST <span className="text-[#00B4D8]">YAOUNDÉ</span>{' '}
-                <span className="inline-block px-2 py-0.5 rounded-md bg-[#162E26] border border-[#224438] text-[#F4A91E] font-mono text-base sm:text-xl">
+                <span className="inline-block px-2 py-0.5 rounded-md bg-[#162E26] border border-[#224438] text-[#F5B726] font-mono text-base sm:text-xl">
                   26
                 </span>
               </h1>
@@ -80,28 +60,34 @@ export function EventHeaderBanner() {
             {/* Badges Pratiques (Date, Heure, Lieu) */}
             <div id="banner-practical-details" className="flex flex-wrap items-center gap-2 pt-1 text-xs text-zinc-300">
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#162E26] border border-[#224438]">
-                <Calendar className="w-3.5 h-3.5 text-[#F4A91E]" />
+                <Calendar className="w-3.5 h-3.5 text-[#F5B726]" />
                 <span className="font-medium text-white">Samedi 31 Octobre</span>
               </div>
 
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#162E26] border border-[#224438]">
-                <Clock className="w-3.5 h-3.5 text-[#00B4D8]" />
+                <Clock className="w-3.5 h-3.5 text-[#6DA3E0]" />
                 <span>10:00 - 16:00</span>
                 <span className="text-[10px] text-zinc-400 font-mono">(En présentiel)</span>
               </div>
 
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#162E26] border border-[#224438]">
-                <MapPin className="w-3.5 h-3.5 text-[#E6392F]" />
+                <MapPin className="w-3.5 h-3.5 text-[#E53927]" />
                 <span>Yaoundé, Centre</span>
               </div>
             </div>
           </div>
 
-          {/* Note Pinned Hack Day Count Down */}
-          
+          {/* Vignette Illustration Officielle tous.svg */}
+          <div
+            id="banner-official-artwork"
+            data-element="official-artwork"
+            className="hidden sm:flex items-center justify-center shrink-0 w-60 h-36 relative overflow-hidden rounded-md bg-[#0B1713]/80 border border-[#224438] p-3 shadow-inner"
+          >
+            <HacktoberfestArtwork className="w-full h-full object-contain filter drop-shadow" />
           </div>
+
         </div>
       </div>
-    
+    </div>
   );
 }
